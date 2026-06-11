@@ -7,7 +7,7 @@ import * as L from 'leaflet';
   templateUrl: './map-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapView {
+export class MapView implements AfterViewInit {
   private map: L.Map | undefined;
 
   ngAfterViewInit(): void {
