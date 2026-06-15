@@ -1,67 +1,52 @@
 <footer class="bg-black text-white">
-  <div class="container mx-auto px-6 py-5">
+  <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-5">
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+      <!-- Nombre completo -->
+      <span class="text-sm font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+        Alexis García Mancha
+      </span>
 
-    <div class="flex flex-col items-center text-center space-y-4">
+      <!-- Separador -->
+      <span class="hidden sm:inline text-gray-600">·</span>
 
-
-      <div class="space-y-2">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Alexis García Mancha
-        </h3>
-        <p class="text-gray-400 text-sm tracking-wide uppercase">Frontend Developer</p>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500">
-        <span>Built with</span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-900 border border-gray-800">
-          <span>🅰️</span>
-          <span class="text-gray-400">Angular</span>
-        </span>
-        <span>•</span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-900 border border-gray-800">
-          <span>🎨</span>
-          <span class="text-gray-400">Tailwind CSS</span>
-        </span>
-        <span>•</span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-900 border border-gray-800">
-          <span>☕</span>
-          <span class="text-gray-400">Spring Boot</span>
-        </span>
-      </div>
-
-      <div class="w-16 h-px bg-gradient-to-r from-cyan-500/50 to-blue-500/50"></div>
-
-      <div class="flex flex-col sm:flex-row gap-4 sm:gap-8">
+      <!-- Botones sociales -->
+      <div class="flex items-center gap-2">
         <a
           href="https://www.linkedin.com/in/alexis-gm/"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex items-center gap-2 px-6 py-1 rounded-full border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 hover:bg-gray-900/50"
+          class="group flex items-center gap-1.5 px-3 py-1 rounded-full border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 hover:bg-gray-900/50"
         >
-          <img src="/icons/footer/linkedin.svg" alt="LinkedIn" class="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
-          <span class="text-gray-300 group-hover:text-white transition-colors">LinkedIn</span>
+          <img src="/icons/footer/linkedin.svg" alt="LinkedIn" class="w-4 h-4" />
+          <span class="text-gray-300 group-hover:text-white transition-colors text-xs">LinkedIn</span>
         </a>
-
         <a
           href="https://github.com/Alexis86Sevilla"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex items-center gap-2 px-6 py-1 rounded-full border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 hover:bg-gray-900/50"
+          class="group flex items-center gap-1.5 px-3 py-1 rounded-full border border-gray-700 hover:border-cyan-500/50 transition-all duration-300 hover:bg-gray-900/50"
         >
-          <img src="/icons/footer/github.svg" alt="GitHub" class="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
-          <span class="text-gray-300 group-hover:text-white transition-colors">GitHub</span>
+          <img src="/icons/footer/github.svg" alt="GitHub" class="w-4 h-4" />
+          <span class="text-gray-300 group-hover:text-white transition-colors text-xs">GitHub</span>
         </a>
       </div>
 
-      <div class="space-y-1 text-sm">
-        <p class="text-gray-400">
-          © {{ year }} <span class="text-gray-300">Alexis García Mancha</span>
-        </p>
-        <p class="text-gray-500 text-xs">
-          Released under MIT License
-        </p>
-      </div>
+      <!-- Separador -->
+      <span class="hidden sm:inline text-gray-600">·</span>
 
+      <!-- Año y licencia -->
+      <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
+        <span>© {{ year }}</span>
+        <a
+          href="https://github.com/Alexis86Sevilla/urban-oasis/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-cyan-400 transition-colors underline underline-offset-2"
+          title="MIT License - Permite usar, modificar y distribuir el código con atribución"
+        >
+          MIT License
+        </a>
+      </div>
     </div>
   </div>
 </footer>
