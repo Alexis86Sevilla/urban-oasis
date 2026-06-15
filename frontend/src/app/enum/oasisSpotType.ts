@@ -1,0 +1,5 @@
+export enum OasisSpotType {
+  WATER_FOUNTAIN = 'WATER_FOUNTAIN',
+  AC_BUILDING = 'AC_BUILDING',
+  SHADE = 'SHADE',
+}
