@@ -96,6 +96,10 @@ export class MapView implements AfterViewInit {
     this.markersLayer.addTo(this.map);
 
     this.isMapReady.set(true);
+
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 100);
   }
 
   private getIconForType(type: OasisSpotType): L.DivIcon {
