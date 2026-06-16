@@ -4,18 +4,18 @@
     <app-map-view></app-map-view>
   </div>
 
-  <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 pointer-events-none flex flex-col gap-2 sm:gap-3">
+  <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col gap-2 sm:gap-3">
 
     <div class="flex flex-row gap-1.5 items-center">
       @if (wheater()) {
-        <div class="{{temperatureIndicator().class}} pointer-events-auto h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
+        <div class="{{temperatureIndicator().class}} pointer-events-none h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
           <div class="flex flex-col leading-tight">
             <span class="text-sm sm:text-base font-semibold">{{temperatureIndicator().temp}}</span>
             <span class="text-[10px] text-slate-700">{{temperatureIndicator().label}}</span>
           </div>
         </div>
 
-        <div class="{{windInfo().class}} pointer-events-auto h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
+        <div class="{{windInfo().class}} pointer-events-none h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
           <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4 text-slate-500">
           <div class="flex flex-col leading-tight">
             <span class="text-sm sm:text-base font-semibold">{{windInfo().speed}}</span>
@@ -24,7 +24,7 @@
         </div>
 
         @if((wheater()?.temperature ?? 0) >= 40 || (wheater()?.windspeed ?? 0) >= 40) {
-          <div class="pointer-events-auto h-10 sm:h-11 px-3 bg-red-300/50 text-red-600 rounded-lg border border-amber-200 shadow-sm flex flex-col md:gap-1 animate-pulse">
+          <div class="pointer-events-none h-10 sm:h-11 px-3 bg-red-300/50 text-red-600 rounded-lg border border-amber-200 shadow-sm flex flex-col md:gap-1 animate-pulse">
             <div class="flex flex-row items-center gap-1">
               <img src="icons/map/warning.svg" alt="Precaución" class="w-4 h-4 mt-1">
               <span class="text-xs font-medium">Precaución</span>
@@ -34,12 +34,12 @@
         }
       }
 
-      <button (click)="updateActualPosition()" class="pointer-events-auto h-10 sm:h-11 w-10 sm:w-11 rounded-lg bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 flex items-center justify-center ml-auto">
+      <button (click)="updateActualPosition()" class="cursor-pointer h-10 sm:h-11 w-10 sm:w-11 rounded-lg bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 flex items-center justify-center ml-auto">
         <img src="icons/map/location.svg" alt="Mi ubicación" class="w-5 h-5 text-slate-600">
       </button>
     </div>
 
-    <div class="pointer-events-auto">
+    <div>
       <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
         <button (click)="filter('ALL')"
              [class.bg-slate-800]="oasisService.activeFilter() === 'ALL'"
@@ -48,7 +48,7 @@
              [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'ALL'"
              [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
           Todo
         </button>
         <button (click)="filter('WATER_FOUNTAIN')"
@@ -58,7 +58,7 @@
              [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
              [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
           Fuentes
         </button>
         <button (click)="filter('SHADE')"
@@ -68,7 +68,7 @@
              [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'SHADE'"
              [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
           Sombra
         </button>
         <button (click)="filter('AC_BUILDING')"
@@ -78,7 +78,7 @@
              [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'AC_BUILDING'"
              [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
           A/A
         </button>
       </div>
