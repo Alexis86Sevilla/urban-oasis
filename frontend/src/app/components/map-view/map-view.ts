@@ -7,6 +7,7 @@ import { OasisSpotType } from '../../enum/oasisSpotType';
   selector: 'app-map-view',
   imports: [],
   templateUrl: './map-view.html',
+  styleUrl: './map-view.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapView implements AfterViewInit {

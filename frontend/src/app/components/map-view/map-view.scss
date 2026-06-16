@@ -1,0 +1,6 @@
+
+@media (width <= 1024px) {
+  :host ::ng-deep .leaflet-control-container .leaflet-control-zoom {
+    display: none !important;
+  }
+}
