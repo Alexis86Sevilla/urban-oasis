@@ -7,11 +7,16 @@
   <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 pointer-events-none flex flex-col gap-2 sm:gap-3">
 
     <div class="flex flex-row gap-1.5">
-      <span class="pointer-events-auto h-14 w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 flex items-center px-4 text-slate-400 font-medium">Buscar un oasis...</span>
       @if (wheater()) {
-        <div class="{{temperatureIndicator()}} pointer-events-auto h-14 min-w-[80px] backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-lg font-bold">
-          {{ wheater()!.temperature }}°C
-        </div>
+      <div class="{{temperatureIndicator().class}} pointer-events-auto h-14 min-w-[80px] backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-lg font-bold">
+        {{ temperatureIndicator().temp }}
+      </div>
+
+      <div class="{{windInfo().class}} pointer-events-auto h-14 min-w-[80px] rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center justify-center">
+        <span class="text-xs font-bold">{{windInfo().text}}</span>
+        <span class="text-[10px] opacity-75">{{windInfo().speed}}</span>
+        <span class="text-[10px] opacity-75">{{windInfo().description}}</span>
+      </div>
       }
       <button (click)="updateActualPosition()" class="pointer-events-auto cursor-pointer px-4 py-2 rounded-2xl bg-white/95 shadow-lg border border-gray-100 hover:bg-white transition-colors duration-200">
         <img class="w-8 h-8 hover:scale-140 transition-transform duration-400" src="icons/map/location-icon.svg" alt="Buscar">
