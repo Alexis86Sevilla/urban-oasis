@@ -14,56 +14,34 @@ export class Home {
   protected readonly oasisService = inject(OasisService);
   protected readonly wheater = this.weatherService.weather;
   protected readonly temperatureIndicator = computed(() => {
-    const temp = this.wheater()?.temperature ?? 0;
-    if (temp < 30) {
-      return {
-        temp: Math.round(temp) + ' °C',
-        class: 'bg-green-100 text-green-700',
+    const temp = Math.round(this.wheater()?.temperature ?? 0) ;
 
-      }
-    } else if (temp >= 30 && temp < 35) {
-      return {
-        temp: Math.round(temp) + ' °C',
-        class: 'bg-orange-100 text-orange-700',
-
-      }
+    if (temp >= 35) {
+      return { temp: temp + '°', class: 'bg-red-200/50 text-red-600 border-red-200', label: 'Muy caluroso' };
+    } else if (temp >= 30) {
+      return { temp: temp + '°', class: 'bg-orange-200/50 text-orange-600 border-orange-200', label: 'Caluroso' };
+    } else if (temp >= 20) {
+      return { temp: temp + '°', class: 'bg-green-500/20 text-slate-700 border-slate-200', label: 'Templado' };
+    } else if (temp >= 15) {
+      return { temp: temp + '°', class: 'bg-blue-600/20 text-slate-700 border-slate-200', label: 'Fresco' };
     } else {
-      return {
-        temp: Math.round(temp) + ' °C',
-        class: 'bg-red-100 text-red-700',
-      }
+      return { temp: temp + '°', class: 'bg-blue-500/20 text-blue-700 border-blue-200', label: 'Frío' };
     }
   });
+
   protected readonly windInfo = computed(() => {
-    const wind = this.wheater()?.windspeed ?? 0;
-    if (wind < 10) {
-      return {
-        class: 'bg-green-100 text-green-700',
-        text: 'Calma',
-        speed: `${Math.round(wind)} km/h`,
-        description: 'Sin viento'
-      };
-    } else if (wind < 20) {
-      return {
-        class: 'bg-yellow-100 text-yellow-700',
-        text: 'Brisa',
-        speed: `${Math.round(wind)} km/h`,
-        description: `${Math.round(wind)} km/h`
-      };
-    } else if (wind < 30) {
-      return {
-        class: 'bg-orange-100 text-orange-700',
-        text: 'Viento',
-        speed: `${Math.round(wind)} km/h`,
-        description: `${Math.round(wind)} km/h`
-      };
+    const wind = Math.round(this.wheater()?.windspeed ?? 0);
+
+    if (wind >= 40) {
+      return { speed: wind + ' km/h', class: 'bg-red-200/50 text-red-600 border-red-200', label: 'Vendaval' };
+    } else if (wind >= 30) {
+      return { speed: wind + ' km/h', class: 'bg-orange-200/50 text-orange-600 border-slate-200', label: 'Viento' };
+    } else if (wind >= 25) {
+      return { speed: wind + ' km/h', class: 'bg-green-500/20 text-slate-700 border-slate-200', label: 'Brisa fuerte' };
+    } else if (wind >= 20) {
+      return { speed: wind + ' km/h', class: 'bg-green-500/20 text-slate-700 border-slate-200', label: 'Brisa' };
     } else {
-      return {
-        class: 'bg-red-100 text-red-700',
-        text: 'Ventoso',
-        speed: `${Math.round(wind)} km/h`,
-        description: `${Math.round(wind)} km/h`
-      };
+      return { speed: wind + ' km/h', class: 'bg-green-200/60 text-slate-700 border-slate-200', label: 'Calmo' };
     }
   });
 

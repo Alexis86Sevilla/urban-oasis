@@ -6,52 +6,82 @@
 
   <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 pointer-events-none flex flex-col gap-2 sm:gap-3">
 
-    <div class="flex flex-row gap-1.5">
+    <div class="flex flex-row gap-1.5 items-center">
       @if (wheater()) {
-      <div class="{{temperatureIndicator().class}} pointer-events-auto h-14 min-w-[80px] backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-lg font-bold">
-        {{ temperatureIndicator().temp }}
-      </div>
+        <div class="{{temperatureIndicator().class}} pointer-events-auto h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
+          <div class="flex flex-col leading-tight">
+            <span class="text-sm sm:text-base font-semibold">{{temperatureIndicator().temp}}</span>
+            <span class="text-[10px] text-slate-700">{{temperatureIndicator().label}}</span>
+          </div>
+        </div>
 
-      <div class="{{windInfo().class}} pointer-events-auto h-14 min-w-[80px] rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center justify-center">
-        <span class="text-xs font-bold">{{windInfo().text}}</span>
-        <span class="text-[10px] opacity-75">{{windInfo().speed}}</span>
-        <span class="text-[10px] opacity-75">{{windInfo().description}}</span>
-      </div>
+        <div class="{{windInfo().class}} pointer-events-auto h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
+          <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4 text-slate-500">
+          <div class="flex flex-col leading-tight">
+            <span class="text-sm sm:text-base font-semibold">{{windInfo().speed}}</span>
+            <span class="text-[10px] text-slate-700">{{windInfo().label}}</span>
+          </div>
+        </div>
+
+        @if((wheater()?.temperature ?? 0) >= 40 || (wheater()?.windspeed ?? 0) >= 40) {
+          <div class="pointer-events-auto h-10 sm:h-11 px-3 bg-red-300/50 text-red-600 rounded-lg border border-amber-200 shadow-sm flex flex-col md:gap-1 animate-pulse">
+            <div class="flex flex-row items-center gap-1">
+              <img src="icons/map/warning.svg" alt="Precaución" class="w-4 h-4 mt-1">
+              <span class="text-xs font-medium">Precaución</span>
+            </div>
+            <span class="text-xs font-medium">Clima extremo</span>
+          </div>
+        }
       }
-      <button (click)="updateActualPosition()" class="pointer-events-auto cursor-pointer px-4 py-2 rounded-2xl bg-white/95 shadow-lg border border-gray-100 hover:bg-white transition-colors duration-200">
-        <img class="w-8 h-8 hover:scale-140 transition-transform duration-400" src="icons/map/location-icon.svg" alt="Buscar">
+
+      <button (click)="updateActualPosition()" class="pointer-events-auto h-10 sm:h-11 w-10 sm:w-11 rounded-lg bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 flex items-center justify-center ml-auto">
+        <img src="icons/map/location.svg" alt="Mi ubicación" class="w-5 h-5 text-slate-600">
       </button>
     </div>
 
-    <div class="pointer-events-auto flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-      <div (click)="filter('ALL')"
-           [class.bg-teal-50]="oasisService.activeFilter() === 'ALL'"
-           [class.text-teal-700]="oasisService.activeFilter() === 'ALL'"
-           [class.border-teal-100]="oasisService.activeFilter() === 'ALL'"
-           [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
-           [class.text-slate-600]="oasisService.activeFilter() !== 'ALL'"
-           class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm shadow-lg whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95">🗺️ Todo</div>
-      <div (click)="filter('WATER_FOUNTAIN')"
-           [class.bg-teal-50]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-           [class.text-teal-700]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-           [class.border-teal-100]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-           [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-           [class.text-slate-600]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-           class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm shadow-lg whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95">💧 Fuentes</div>
-      <div (click)="filter('SHADE')"
-           [class.bg-teal-50]="oasisService.activeFilter() === 'SHADE'"
-           [class.text-teal-700]="oasisService.activeFilter() === 'SHADE'"
-           [class.border-teal-100]="oasisService.activeFilter() === 'SHADE'"
-           [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
-           [class.text-slate-600]="oasisService.activeFilter() !== 'SHADE'"
-           class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm shadow-lg whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95">🌳 Sombra</div>
-      <div (click)="filter('AC_BUILDING')"
-           [class.bg-teal-50]="oasisService.activeFilter() === 'AC_BUILDING'"
-           [class.text-teal-700]="oasisService.activeFilter() === 'AC_BUILDING'"
-           [class.border-teal-100]="oasisService.activeFilter() === 'AC_BUILDING'"
-           [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
-           [class.text-slate-600]="oasisService.activeFilter() !== 'AC_BUILDING'"
-           class="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm shadow-lg whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95">❄️ A/A</div>
+    <div class="pointer-events-auto">
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+        <button (click)="filter('ALL')"
+             [class.bg-slate-800]="oasisService.activeFilter() === 'ALL'"
+             [class.text-white]="oasisService.activeFilter() === 'ALL'"
+             [class.border-slate-800]="oasisService.activeFilter() === 'ALL'"
+             [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
+             [class.text-slate-700]="oasisService.activeFilter() !== 'ALL'"
+             [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'"
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+          Todo
+        </button>
+        <button (click)="filter('WATER_FOUNTAIN')"
+             [class.bg-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+             [class.text-white]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+             [class.border-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+             [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
+             [class.text-slate-700]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
+             [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+          Fuentes
+        </button>
+        <button (click)="filter('SHADE')"
+             [class.bg-teal-600]="oasisService.activeFilter() === 'SHADE'"
+             [class.text-white]="oasisService.activeFilter() === 'SHADE'"
+             [class.border-teal-600]="oasisService.activeFilter() === 'SHADE'"
+             [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
+             [class.text-slate-700]="oasisService.activeFilter() !== 'SHADE'"
+             [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'"
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+          Sombra
+        </button>
+        <button (click)="filter('AC_BUILDING')"
+             [class.bg-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
+             [class.text-white]="oasisService.activeFilter() === 'AC_BUILDING'"
+             [class.border-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
+             [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
+             [class.text-slate-700]="oasisService.activeFilter() !== 'AC_BUILDING'"
+             [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'"
+             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400">
+          A/A
+        </button>
+      </div>
     </div>
 
   </div>
