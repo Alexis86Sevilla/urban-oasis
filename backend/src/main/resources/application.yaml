@@ -1,3 +1,14 @@
 spring:
   application:
     name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5433/urban_oasis
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+server:
+  port: 8080
