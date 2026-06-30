@@ -61,7 +61,7 @@ export class OasisService {
       {
         enableHighAccuracy: true,
         timeout: 5000,
-        maximumAge: 60000
+        maximumAge: 10000
       }
     );
   }
