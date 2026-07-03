@@ -32,15 +32,15 @@ export class MapView implements AfterViewInit {
         let distanceHtml = '';
 
         if (actualPos) {
-          const distInMeters = this.map!.distance([o.lat, o.lng], actualPos);
+          const distInMeters = this.map!.distance([o.latitude, o.longitude], actualPos);
           distanceHtml = `<p class="text-xs font-semibold text-blue-600 mt-1">📍 A ${Math.round(distInMeters)} metros</p>`;
         }
 
-        L.marker([o.lat, o.lng], { icon: this.getIconForType(o.type) })
+        L.marker([o.latitude, o.longitude], { icon: this.getIconForType(o.type) })
           .bindPopup(`
             <div class="p-2 min-w-[150px]">
               <h3 class="font-bold text-teal-700 leading-tight">${o.name}</h3>
-              <p class="text-sm text-gray-500 capitalize">${o.type}</p>
+              <p class="text-sm text-gray-500">${this.getTypeLabel(o.type)}</p>
               ${distanceHtml}
             </div>
           `)
@@ -131,6 +131,15 @@ export class MapView implements AfterViewInit {
       iconAnchor: [16, 16],
       popupAnchor: [0, -16]
     });
+}
+
+private getTypeLabel(type: OasisSpotType): string {
+  const labels: Record<OasisSpotType, string> = {
+    [OasisSpotType.WATER_FOUNTAIN]: 'Fuente de agua',
+    [OasisSpotType.SHADE]: 'Parque o zona de sombra',
+    [OasisSpotType.AC_BUILDING]: 'Edificio con A/A'
+  };
+  return labels[type] || type;
 }
 
 private getUserIcon(): L.DivIcon {

@@ -1,47 +1,18 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { OasisSpot } from '../models/oasisSpot';
 import { OasisSpotType } from '../enum/oasisSpotType';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OasisService {
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/oasis';
+
   activeFilter = signal<string>('ALL');
   actualPosition = signal<[number, number, number] | null>(null);
-  private readonly _oases = signal<OasisSpot[]>([
-    {
-      id: '1',
-      name: 'Fuente Plaza Nueva',
-      type: OasisSpotType.WATER_FOUNTAIN,
-      lat: 37.3886,
-      lng: -5.9823,
-      isWorking: true
-    },
-    {
-      id: '2',
-      name: 'Sombra Parque de María Luisa',
-      type: OasisSpotType.SHADE,
-      lat: 37.3773,
-      lng: -5.9869,
-      isWorking: true
-    },
-    {
-      id: '3',
-      name: 'Biblioteca Pública (Aire Acondicionado)',
-      type: OasisSpotType.AC_BUILDING,
-      lat: 37.3920,
-      lng: -5.9800,
-      isWorking: true
-    },
-    {
-      id: '4',
-      name: 'Fuente Alameda de Hércules',
-      type: OasisSpotType.WATER_FOUNTAIN,
-      lat: 37.3985,
-      lng: -5.9926,
-      isWorking: false
-    }
-  ]);
+  private readonly _oases = signal<OasisSpot[]>([]);
 
   public readonly oases = this._oases.asReadonly();
   public readonly filteredOases = computed(() => {
@@ -49,6 +20,10 @@ export class OasisService {
     if (filter === 'ALL') return this.oases();
     return this.oases().filter(o => o.type === filter);
   });
+
+  constructor() {
+    this.loadOasesFromBackend();
+  }
 
   public updateActualPosition() {
     navigator.geolocation.getCurrentPosition(
@@ -66,4 +41,14 @@ export class OasisService {
     );
   }
 
+  private loadOasesFromBackend(): void {
+    this.http.get<OasisSpot[]>(this.apiUrl).subscribe({
+      next: (res) => {
+        this._oases.set(res);
+      },
+      error: (err) => {
+        console.error('Error cargando oasis:', err);
+      }
+    });
+  }
 }
