@@ -49,7 +49,8 @@ public class OverpassClient {
                 (
                   node[leisure=park](area.searchArea);
                   node[leisure=garden](area.searchArea);
-                  node[natural=tree](area.searchArea);
+                  node[leisure=playground](area.searchArea);
+                  node[leisure=recreation_ground](area.searchArea);
                 );
                 out;
                 """;
