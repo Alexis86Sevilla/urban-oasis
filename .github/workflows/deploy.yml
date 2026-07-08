@@ -23,7 +23,7 @@ jobs:
         run: ./mvnw clean package -DskipTests
 
       - name: Deploy to VPS
-        uses: appleboy/scp-action@v0
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -33,7 +33,7 @@ jobs:
           strip_components: 2
 
       - name: Restart service
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -60,7 +60,7 @@ jobs:
         run: npx ng build --configuration=production
 
       - name: Deploy to VPS
-        uses: appleboy/scp-action@v0
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
