@@ -10,7 +10,7 @@ export class OasisService {
   private http = inject(HttpClient);
   private apiUrl = window.location.hostname === 'localhost'
     ? 'http://localhost:8080/api/oasis'
-    : 'https://urban-oasis-backend-rvp4.onrender.com/api/oasis';
+    : 'https://urban-oasis.info/api/oasis';
 
   activeFilter = signal<string>('ALL');
   actualPosition = signal<[number, number, number] | null>(null);
