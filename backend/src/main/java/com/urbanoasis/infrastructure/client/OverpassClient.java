@@ -26,7 +26,7 @@ public class OverpassClient {
     private static final Logger log = LoggerFactory.getLogger(OverpassClient.class);
 
     private final RestTemplate restTemplate;
-    private static final String OVERPASS_URL = "https://overpass-api.de/api/interpreter";
+    private static final String OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter";
 
     public OverpassClient() {
         this.restTemplate = new RestTemplate();
