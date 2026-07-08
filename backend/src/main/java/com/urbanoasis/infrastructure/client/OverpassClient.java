@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,10 +28,13 @@ public class OverpassClient {
     private static final Logger log = LoggerFactory.getLogger(OverpassClient.class);
 
     private final RestTemplate restTemplate;
-    private static final String OVERPASS_URL = "https://overpass.kumi.systems/api/interpreter";
+    private static final String OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 
     public OverpassClient() {
-        this.restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(10));
+        factory.setReadTimeout(Duration.ofSeconds(60));
+        this.restTemplate = new RestTemplate(factory);
     }
 
     public List<OasisSpot> getFountainsInSevilla() {
