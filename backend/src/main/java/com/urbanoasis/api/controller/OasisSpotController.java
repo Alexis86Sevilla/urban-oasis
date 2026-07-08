@@ -67,4 +67,10 @@ public class OasisSpotController {
         int saved = oasisSpotService.seedFromOverpass(elements, type);
         return ResponseEntity.ok("Seeded " + saved + " " + type + " spots");
     }
+
+    @DeleteMapping("/type/{type}")
+    public ResponseEntity<String> deleteByType(@PathVariable OasisType type) {
+        oasisSpotService.deleteByType(type);
+        return ResponseEntity.ok("Deleted all " + type + " spots");
+    }
 }

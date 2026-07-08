@@ -24,4 +24,9 @@ public interface OasisSpotRepository extends JpaRepository<OasisSpot, Long> {
     @Query("DELETE FROM OasisSpot")
     @Transactional
     void truncateAll();
+
+    @Modifying
+    @Query("DELETE FROM OasisSpot WHERE type = :type")
+    @Transactional
+    void deleteByType(OasisType type);
 }

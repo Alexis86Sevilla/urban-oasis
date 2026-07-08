@@ -97,6 +97,11 @@ public class OasisSpotService {
     }
 
     @Transactional
+    public void deleteByType(OasisType type) {
+        repository.deleteByType(type);
+    }
+
+    @Transactional
     public void executeFullSync() {
         int created = 0;
         int updated = 0;
