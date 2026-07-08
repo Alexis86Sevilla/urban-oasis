@@ -70,7 +70,7 @@ public class OverpassClient {
         return executeQuery(query, element -> OasisType.AC_BUILDING);
     }
 
-    private OasisSpot convertToOasisSpot(OverpassElement element, OasisType type) {
+    OasisSpot convertToOasisSpot(OverpassElement element, OasisType type) {
         OasisSpot spot = new OasisSpot();
         spot.setOsmNodeId(element.getId());
         String name = element.getTags() != null && element.getTags().getName() != null

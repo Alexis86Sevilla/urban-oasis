@@ -4,6 +4,7 @@ import com.urbanoasis.domain.model.OasisSpot;
 import com.urbanoasis.domain.model.OasisType;
 import com.urbanoasis.domain.repository.OasisSpotRepository;
 import com.urbanoasis.infrastructure.client.OverpassClient;
+import com.urbanoasis.infrastructure.client.dto.OverpassElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -188,6 +189,20 @@ public class OasisSpotService {
             }
         }
         log.info("Seed complete: {} spots saved out of {}", saved, spots.size());
+        return saved;
+    }
+
+    @Transactional
+    public int seedFromOverpass(List<OverpassElement> elements, OasisType type) {
+        int saved = 0;
+        LocalDateTime now = LocalDateTime.now();
+        for (OverpassElement element : elements) {
+            if (element.getId() == null) continue;
+            OasisSpot spot = overpassClient.convertToOasisSpot(element, type);
+            SyncResult result = saveOrUpdateSpot(spot, now);
+            if (result != SyncResult.SKIPPED) saved++;
+        }
+        log.info("Seed complete: {} {} spots saved", saved, type);
         return saved;
     }
 }

@@ -1,7 +1,9 @@
 package com.urbanoasis.api.controller;
 
 import com.urbanoasis.domain.model.OasisSpot;
+import com.urbanoasis.domain.model.OasisType;
 import com.urbanoasis.domain.service.OasisSpotService;
+import com.urbanoasis.infrastructure.client.dto.OverpassElement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,8 +63,8 @@ public class OasisSpotController {
     }
 
     @PostMapping("/seed")
-    public ResponseEntity<String> seed(@RequestBody List<OasisSpot> spots) {
-        int saved = oasisSpotService.seedSpots(spots);
-        return ResponseEntity.ok("Seeded " + saved + " spots");
+    public ResponseEntity<String> seed(@RequestBody List<OverpassElement> elements, @RequestParam OasisType type) {
+        int saved = oasisSpotService.seedFromOverpass(elements, type);
+        return ResponseEntity.ok("Seeded " + saved + " " + type + " spots");
     }
 }
