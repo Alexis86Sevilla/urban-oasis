@@ -8,7 +8,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class OasisService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/oasis';
+  private apiUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:8080/api/oasis'
+    : 'https://urban-oasis-backend-rvp4.onrender.com/api/oasis';
 
   activeFilter = signal<string>('ALL');
   actualPosition = signal<[number, number, number] | null>(null);
