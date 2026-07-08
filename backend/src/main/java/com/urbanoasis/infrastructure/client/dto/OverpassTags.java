@@ -1,5 +1,7 @@
 package com.urbanoasis.infrastructure.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class OverpassTags {
 
     private String name;
@@ -8,6 +10,12 @@ public class OverpassTags {
     private String operator;
     private String wheelchair;
     private String bottle;
+
+    @JsonProperty("leisure")
+    private String leisure;
+
+    @JsonProperty("natural")
+    private String natural;
 
     public String getName() {
         return name;
@@ -55,5 +63,21 @@ public class OverpassTags {
 
     public void setBottle(String bottle) {
         this.bottle = bottle;
+    }
+
+    public String getLeisure() {
+        return leisure;
+    }
+
+    public void setLeisure(String leisure) {
+        this.leisure = leisure;
+    }
+
+    public String getNatural() {
+        return natural;
+    }
+
+    public void setNatural(String natural) {
+        this.natural = natural;
     }
 }

@@ -4,15 +4,20 @@ import com.urbanoasis.domain.model.OasisSpot;
 import com.urbanoasis.domain.model.OasisType;
 import com.urbanoasis.domain.repository.OasisSpotRepository;
 import com.urbanoasis.infrastructure.client.OverpassClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class OasisSpotService {
+
+    private static final Logger log = LoggerFactory.getLogger(OasisSpotService.class);
 
     private final OasisSpotRepository repository;
 
@@ -85,18 +90,90 @@ public class OasisSpotService {
         });
     }
 
-    public void syncFountainsAndShadesFromOverpass() {
-        List<OasisSpot> allSpots = new ArrayList<>();
-
-        allSpots.addAll(overpassClient.getWaterFountainsInSevilla());
-        allSpots.addAll(overpassClient.getShadeSpotsInSevilla());
-
-        repository.saveAll(allSpots);
+    @Transactional
+    public void truncateAll() {
+        repository.truncateAll();
     }
 
-    public void syncACBuildingsFromOverpass() {
-        List<OasisSpot> acBuildings = overpassClient.getAcBuildingsInSevilla();
+    @Transactional
+    public void executeFullSync() {
+        int created = 0;
+        int updated = 0;
+        int skipped = 0;
 
-        repository.saveAll(acBuildings);
+        List<OasisSpot> allSpots = new ArrayList<>();
+        allSpots.addAll(overpassClient.getFountainsInSevilla());
+
+        sleepBetweenQueries();
+
+        allSpots.addAll(overpassClient.getShadeInSevilla());
+
+        sleepBetweenQueries();
+
+        allSpots.addAll(overpassClient.getAcBuildingsInSevilla());
+
+        LocalDateTime now = LocalDateTime.now();
+        for (OasisSpot incoming : allSpots) {
+            SyncResult result = saveOrUpdateSpot(incoming, now);
+            switch (result) {
+                case CREATED -> created++;
+                case UPDATED -> updated++;
+                case SKIPPED -> skipped++;
+            }
+        }
+
+        log.info("Sync complete: {} created, {} updated, {} skipped", created, updated, skipped);
+    }
+
+    @Transactional
+    public void syncFountainsAndShadesFromOverpass() {
+        LocalDateTime now = LocalDateTime.now();
+        overpassClient.getFountainsInSevilla().forEach(spot -> saveOrUpdateSpot(spot, now));
+        overpassClient.getShadeInSevilla().forEach(spot -> saveOrUpdateSpot(spot, now));
+    }
+
+    @Transactional
+    public void syncACBuildingsFromOverpass() {
+        LocalDateTime now = LocalDateTime.now();
+        overpassClient.getAcBuildingsInSevilla().forEach(spot -> saveOrUpdateSpot(spot, now));
+    }
+
+    private SyncResult saveOrUpdateSpot(OasisSpot incoming, LocalDateTime now) {
+        if (incoming.getOsmNodeId() == null) {
+            log.warn("Skipping spot without osmNodeId: {}", incoming);
+            return SyncResult.SKIPPED;
+        }
+
+        Optional<OasisSpot> existing = repository.findByOsmNodeId(incoming.getOsmNodeId());
+        if (existing.isPresent()) {
+            OasisSpot spot = existing.get();
+            spot.setName(incoming.getName());
+            spot.setType(incoming.getType());
+            spot.setLatitude(incoming.getLatitude());
+            spot.setLongitude(incoming.getLongitude());
+            spot.setAvailable(incoming.isAvailable());
+            spot.setUpdatedAt(now);
+            repository.save(spot);
+            return SyncResult.UPDATED;
+        }
+
+        incoming.setUpdatedAt(now);
+        repository.save(incoming);
+        return SyncResult.CREATED;
+    }
+
+    private void sleepBetweenQueries() {
+        try {
+            Thread.sleep(30_000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Sleep between Overpass queries interrupted");
+        }
+    }
+
+    private enum SyncResult {
+        CREATED,
+        UPDATED,
+        SKIPPED
     }
 }

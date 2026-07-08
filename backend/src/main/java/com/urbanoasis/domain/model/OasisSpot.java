@@ -27,12 +27,22 @@ public class OasisSpot {
     @Column(nullable = false)
     private boolean isAvailable = true;
 
+    @Column(unique = true, nullable = true)
+    private Long osmNodeId;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -87,28 +97,46 @@ public class OasisSpot {
         return createdAt;
     }
 
+    public Long getOsmNodeId() {
+        return osmNodeId;
+    }
+
+    public void setOsmNodeId(Long osmNodeId) {
+        this.osmNodeId = osmNodeId;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         OasisSpot oasisSpot = (OasisSpot) o;
-        return isAvailable == oasisSpot.isAvailable && Objects.equals(id, oasisSpot.id) && Objects.equals(name, oasisSpot.name) && Objects.equals(type, oasisSpot.type) && Objects.equals(latitude, oasisSpot.latitude) && Objects.equals(longitude, oasisSpot.longitude) && Objects.equals(createdAt, oasisSpot.createdAt);
+        return isAvailable == oasisSpot.isAvailable && Objects.equals(id, oasisSpot.id) && Objects.equals(osmNodeId, oasisSpot.osmNodeId) && Objects.equals(name, oasisSpot.name) && Objects.equals(type, oasisSpot.type) && Objects.equals(latitude, oasisSpot.latitude) && Objects.equals(longitude, oasisSpot.longitude) && Objects.equals(createdAt, oasisSpot.createdAt) && Objects.equals(updatedAt, oasisSpot.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, latitude, longitude, isAvailable, createdAt);
+        return Objects.hash(id, osmNodeId, name, type, latitude, longitude, isAvailable, createdAt, updatedAt);
     }
 
     @Override
     public String toString() {
         return "OasisSpot{" +
                 "id=" + id +
+                ", osmNodeId=" + osmNodeId +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", isAvailable=" + isAvailable +
                 ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
