@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnChanges, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnChanges, signal, SimpleChanges } from '@angular/core';
 import { MapView } from "../../components/map-view/map-view";
 import { OasisService } from '../../services/oasis';
 import { WeatherService } from '../../services/wheater';
@@ -13,6 +13,7 @@ export class Home {
   private weatherService = inject(WeatherService);
   protected readonly oasisService = inject(OasisService);
   protected readonly wheater = this.weatherService.weather;
+  protected showInfo = signal(false);
   protected readonly temperatureIndicator = computed(() => {
     const temp = Math.round(this.wheater()?.temperature ?? 0) ;
 
