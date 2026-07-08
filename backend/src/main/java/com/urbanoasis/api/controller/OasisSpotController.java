@@ -59,4 +59,10 @@ public class OasisSpotController {
         oasisSpotService.syncACBuildingsFromOverpass();
         return ResponseEntity.ok("Data synchronized from Overpass API");
     }
+
+    @PostMapping("/seed")
+    public ResponseEntity<String> seed(@RequestBody List<OasisSpot> spots) {
+        int saved = oasisSpotService.seedSpots(spots);
+        return ResponseEntity.ok("Seeded " + saved + " spots");
+    }
 }

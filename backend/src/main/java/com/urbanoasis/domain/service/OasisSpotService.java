@@ -176,4 +176,18 @@ public class OasisSpotService {
         UPDATED,
         SKIPPED
     }
+
+    @Transactional
+    public int seedSpots(List<OasisSpot> spots) {
+        int saved = 0;
+        LocalDateTime now = LocalDateTime.now();
+        for (OasisSpot spot : spots) {
+            SyncResult result = saveOrUpdateSpot(spot, now);
+            if (result != SyncResult.SKIPPED) {
+                saved++;
+            }
+        }
+        log.info("Seed complete: {} spots saved out of {}", saved, spots.size());
+        return saved;
+    }
 }
