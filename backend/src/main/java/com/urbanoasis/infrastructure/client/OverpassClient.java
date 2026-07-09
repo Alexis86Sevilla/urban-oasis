@@ -56,16 +56,12 @@ public class OverpassClient {
                 [out:json];
                 area[name="Sevilla"]->.searchArea;
                 (
-                  node[leisure=park](area.searchArea);
                   way[leisure=park](area.searchArea);
                   relation[leisure=park](area.searchArea);
-                  node[leisure=garden](area.searchArea);
                   way[leisure=garden](area.searchArea);
                   relation[leisure=garden](area.searchArea);
-                  node[leisure=playground](area.searchArea);
                   way[leisure=playground](area.searchArea);
                   relation[leisure=playground](area.searchArea);
-                  node[leisure=recreation_ground](area.searchArea);
                   way[leisure=recreation_ground](area.searchArea);
                   relation[leisure=recreation_ground](area.searchArea);
                 );
