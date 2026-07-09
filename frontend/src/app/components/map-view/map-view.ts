@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, effect, signal } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
 import { OasisService } from '../../services/oasis';
 import { OasisSpotType } from '../../enum/oasisSpotType';
 
@@ -12,7 +13,11 @@ import { OasisSpotType } from '../../enum/oasisSpotType';
 })
 export class MapView implements AfterViewInit {
   private map: L.Map | undefined;
-  private markersLayer = new L.LayerGroup();
+  private clusterGroup = L.markerClusterGroup({
+    chunkedLoading: true,
+    maxClusterRadius: 40,
+    disableClusteringAtZoom: 17
+  });
   private readonly oasisService = inject(OasisService);
   private isMapReady = signal(false);
   private userMarker: L.Marker | undefined;
@@ -26,7 +31,7 @@ export class MapView implements AfterViewInit {
 
       if (!ready || !this.map) return;
 
-      this.markersLayer.clearLayers();
+      this.clusterGroup.clearLayers();
 
       oases.forEach(o => {
         let distanceHtml = '';
@@ -44,7 +49,7 @@ export class MapView implements AfterViewInit {
               ${distanceHtml}
             </div>
           `)
-          .addTo(this.markersLayer);
+          .addTo(this.clusterGroup);
       });
     });
 
@@ -94,7 +99,7 @@ export class MapView implements AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.markersLayer.addTo(this.map);
+    this.clusterGroup.addTo(this.map);
 
     this.isMapReady.set(true);
 
