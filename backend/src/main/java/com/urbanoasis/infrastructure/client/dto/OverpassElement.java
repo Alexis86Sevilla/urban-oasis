@@ -6,7 +6,29 @@ public class OverpassElement {
     private Long id;
     private Double lat;
     private Double lon;
+    private Center center;
     private OverpassTags tags;
+
+    public static class Center {
+        private Double lat;
+        private Double lon;
+
+        public Double getLat() {
+            return lat;
+        }
+
+        public void setLat(Double lat) {
+            this.lat = lat;
+        }
+
+        public Double getLon() {
+            return lon;
+        }
+
+        public void setLon(Double lon) {
+            this.lon = lon;
+        }
+    }
 
     public String getType() {
         return type;
@@ -38,6 +60,14 @@ public class OverpassElement {
 
     public void setLon(Double lon) {
         this.lon = lon;
+    }
+
+    public Center getCenter() {
+        return center;
+    }
+
+    public void setCenter(Center center) {
+        this.center = center;
     }
 
     public OverpassTags getTags() {

@@ -41,8 +41,12 @@ public class OverpassClient {
         String query = """
                 [out:json];
                 area[name="Sevilla"]->.searchArea;
-                node[amenity=drinking_water](area.searchArea);
-                out;
+                (
+                  node[amenity=drinking_water](area.searchArea);
+                  way[amenity=drinking_water](area.searchArea);
+                  relation[amenity=drinking_water](area.searchArea);
+                );
+                out center;
                 """;
         return executeQuery(query, element -> OasisType.WATER_FOUNTAIN);
     }
@@ -53,11 +57,19 @@ public class OverpassClient {
                 area[name="Sevilla"]->.searchArea;
                 (
                   node[leisure=park](area.searchArea);
+                  way[leisure=park](area.searchArea);
+                  relation[leisure=park](area.searchArea);
                   node[leisure=garden](area.searchArea);
+                  way[leisure=garden](area.searchArea);
+                  relation[leisure=garden](area.searchArea);
                   node[leisure=playground](area.searchArea);
+                  way[leisure=playground](area.searchArea);
+                  relation[leisure=playground](area.searchArea);
                   node[leisure=recreation_ground](area.searchArea);
+                  way[leisure=recreation_ground](area.searchArea);
+                  relation[leisure=recreation_ground](area.searchArea);
                 );
-                out;
+                out center;
                 """;
         return executeQuery(query, element -> OasisType.SHADE);
     }
@@ -68,15 +80,40 @@ public class OverpassClient {
                 area[name="Sevilla"]->.searchArea;
                 (
                   node[amenity=library](area.searchArea);
+                  way[amenity=library](area.searchArea);
+                  relation[amenity=library](area.searchArea);
                   node[amenity=cinema](area.searchArea);
+                  way[amenity=cinema](area.searchArea);
+                  relation[amenity=cinema](area.searchArea);
                   node[shop=mall](area.searchArea);
+                  way[shop=mall](area.searchArea);
+                  relation[shop=mall](area.searchArea);
+                  node[shop=supermarket](area.searchArea);
+                  way[shop=supermarket](area.searchArea);
+                  relation[shop=supermarket](area.searchArea);
                 );
-                out;
+                out center;
                 """;
         return executeQuery(query, element -> OasisType.AC_BUILDING);
     }
 
     public OasisSpot convertToOasisSpot(OverpassElement element, OasisType type) {
+        Double lat;
+        Double lon;
+
+        if ("node".equals(element.getType())) {
+            lat = element.getLat();
+            lon = element.getLon();
+        } else {
+            lat = element.getCenter() != null ? element.getCenter().getLat() : null;
+            lon = element.getCenter() != null ? element.getCenter().getLon() : null;
+        }
+
+        if (lat == null || lon == null) {
+            log.warn("Skipping Overpass element without coordinates. type={}, id={}", element.getType(), element.getId());
+            return null;
+        }
+
         OasisSpot spot = new OasisSpot();
         spot.setOsmNodeId(element.getId());
         String name = element.getTags() != null && element.getTags().getName() != null
@@ -84,8 +121,8 @@ public class OverpassClient {
                 : assignTypeIfUnknown(type);
         spot.setName(name);
         spot.setType(type);
-        spot.setLatitude(element.getLat());
-        spot.setLongitude(element.getLon());
+        spot.setLatitude(lat);
+        spot.setLongitude(lon);
         spot.setAvailable(true);
         return spot;
     }
@@ -140,7 +177,10 @@ public class OverpassClient {
                 continue;
             }
 
-            spots.add(convertToOasisSpot(element, type));
+            OasisSpot spot = convertToOasisSpot(element, type);
+            if (spot != null) {
+                spots.add(spot);
+            }
         }
         return spots;
     }
