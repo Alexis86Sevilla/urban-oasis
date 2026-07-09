@@ -92,9 +92,9 @@ public class OverpassClient {
 
     private String assignTypeIfUnknown(OasisType type) {
         return switch (type) {
-            case WATER_FOUNTAIN -> "Fuente sin nombre";
-            case SHADE -> "Parque sin nombre";
-            case AC_BUILDING -> "Edificio sin nombre";
+            case WATER_FOUNTAIN -> "Fuente";
+            case SHADE -> "Parque";
+            case AC_BUILDING -> "Edificio";
         };
     }
 
