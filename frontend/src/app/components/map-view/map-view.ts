@@ -34,19 +34,55 @@ export class MapView implements AfterViewInit {
       this.clusterGroup.clearLayers();
 
       oases.forEach(o => {
-        let distanceHtml = '';
+        let emoji = '📍';
+        let accentClass = 'bg-slate-100 text-slate-700';
+
+        if (o.type === OasisSpotType.WATER_FOUNTAIN) {
+          emoji = '💧';
+          accentClass = 'bg-teal-100 text-teal-700';
+        } else if (o.type === OasisSpotType.SHADE) {
+          emoji = '🌳';
+          accentClass = 'bg-green-100 text-green-700';
+        } else if (o.type === OasisSpotType.AC_BUILDING) {
+          emoji = '❄️';
+          accentClass = 'bg-blue-100 text-blue-700';
+        }
+
+        let actionHtml = '';
 
         if (actualPos) {
           const distInMeters = this.map!.distance([o.latitude, o.longitude], actualPos);
-          distanceHtml = `<p class="text-xs font-semibold text-blue-600 mt-1">📍 A ${Math.round(distInMeters)} metros</p>`;
+          const distanceText = distInMeters >= 1000
+            ? `${(distInMeters / 1000).toFixed(1)} km`
+            : `${Math.round(distInMeters)} m`;
+          const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${actualPos[0]},${actualPos[1]}&destination=${o.latitude},${o.longitude}&travelmode=walking`;
+
+          actionHtml = `
+            <div class="px-3 pb-3">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-medium text-slate-500">Distancia</span>
+                <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">${distanceText}</span>
+              </div>
+              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full px-3 py-2 rounded-lg bg-teal-600 !text-white no-underline text-xs font-semibold shadow-sm hover:bg-teal-700 hover:!text-white transition-colors">
+                Cómo llegar
+              </a>
+            </div>
+          `;
         }
 
         L.marker([o.latitude, o.longitude], { icon: this.getIconForType(o.type) })
           .bindPopup(`
-            <div class="p-2 min-w-[150px]">
-              <h3 class="font-bold text-teal-700 leading-tight">${o.name}</h3>
-              <p class="text-sm text-gray-500">${this.getTypeLabel(o.type)}</p>
-              ${distanceHtml}
+            <div class="p-0 min-w-[220px] max-w-[280px] font-sans">
+              <div class="flex items-start gap-3 p-3">
+                <div class="w-10 h-10 rounded-full ${accentClass} flex items-center justify-center text-lg shrink-0">
+                  ${emoji}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-bold text-slate-800 text-base leading-tight mb-0.5">${o.name}</div>
+                  <p class="text-sm text-slate-500 m-0">${this.getTypeLabel(o.type)}</p>
+                </div>
+              </div>
+              ${actionHtml}
             </div>
           `)
           .addTo(this.clusterGroup);
