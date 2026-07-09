@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, effect, signal } from '@angular/core';
 import * as L from 'leaflet';
-import 'leaflet.markercluster';
 import { OasisService } from '../../services/oasis';
 import { OasisSpotType } from '../../enum/oasisSpotType';
 
@@ -13,11 +12,7 @@ import { OasisSpotType } from '../../enum/oasisSpotType';
 })
 export class MapView implements AfterViewInit {
   private map: L.Map | undefined;
-  private clusterGroup = L.markerClusterGroup({
-    chunkedLoading: true,
-    maxClusterRadius: 40,
-    disableClusteringAtZoom: 17
-  });
+  private markersLayer = new L.LayerGroup();
   private readonly oasisService = inject(OasisService);
   private isMapReady = signal(false);
   private userMarker: L.Marker | undefined;
@@ -31,7 +26,7 @@ export class MapView implements AfterViewInit {
 
       if (!ready || !this.map) return;
 
-      this.clusterGroup.clearLayers();
+      this.markersLayer.clearLayers();
 
       oases.forEach(o => {
         let distanceHtml = '';
@@ -49,7 +44,7 @@ export class MapView implements AfterViewInit {
               ${distanceHtml}
             </div>
           `)
-          .addTo(this.clusterGroup);
+          .addTo(this.markersLayer);
       });
     });
 
@@ -92,14 +87,14 @@ export class MapView implements AfterViewInit {
   }
 
   private initMap(): void {
-    this.map = L.map('map').setView([37.3886, -5.9823], 14);
+    this.map = L.map('map', { preferCanvas: true }).setView([37.3886, -5.9823], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.clusterGroup.addTo(this.map);
+    this.markersLayer.addTo(this.map);
 
     this.isMapReady.set(true);
 
