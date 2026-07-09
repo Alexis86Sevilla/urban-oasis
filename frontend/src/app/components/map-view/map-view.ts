@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, effect, signal } from '@angular/core';
-import * as L from 'leaflet';
 import { OasisService } from '../../services/oasis';
 import { OasisSpotType } from '../../enum/oasisSpotType';
+
+declare var L: any;
 
 @Component({
   selector: 'app-map-view',
@@ -11,12 +12,16 @@ import { OasisSpotType } from '../../enum/oasisSpotType';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapView implements AfterViewInit {
-  private map: L.Map | undefined;
-  private markersLayer = new L.LayerGroup();
+  private map: any = undefined;
+  private clusterGroup = L.markerClusterGroup({
+    chunkedLoading: true,
+    maxClusterRadius: 40,
+    disableClusteringAtZoom: 17
+  });
   private readonly oasisService = inject(OasisService);
   private isMapReady = signal(false);
-  private userMarker: L.Marker | undefined;
-  private userCircleAccuracy: L.Circle | undefined;
+  private userMarker: any = undefined;
+  private userCircleAccuracy: any = undefined;
 
   constructor() {
     effect(() => {
@@ -26,7 +31,7 @@ export class MapView implements AfterViewInit {
 
       if (!ready || !this.map) return;
 
-      this.markersLayer.clearLayers();
+      this.clusterGroup.clearLayers();
 
       oases.forEach(o => {
         let distanceHtml = '';
@@ -44,7 +49,7 @@ export class MapView implements AfterViewInit {
               ${distanceHtml}
             </div>
           `)
-          .addTo(this.markersLayer);
+          .addTo(this.clusterGroup);
       });
     });
 
@@ -94,7 +99,7 @@ export class MapView implements AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.markersLayer.addTo(this.map);
+    this.clusterGroup.addTo(this.map);
 
     this.isMapReady.set(true);
 
@@ -103,7 +108,7 @@ export class MapView implements AfterViewInit {
     }, 100);
   }
 
-  private getIconForType(type: OasisSpotType): L.DivIcon {
+  private getIconForType(type: OasisSpotType): any {
     let emoji = '📍';
     let bgColorClass = 'bg-gray-500';
 
@@ -142,7 +147,7 @@ private getTypeLabel(type: OasisSpotType): string {
   return labels[type] || type;
 }
 
-private getUserIcon(): L.DivIcon {
+private getUserIcon(): any {
     const htmlElement = `
       <div class="bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full shadow-md border-2 border-white text-sm">
         👤
