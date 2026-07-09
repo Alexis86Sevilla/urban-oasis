@@ -1,5 +1,13 @@
 <div class="relative w-full h-full">
 
+  @if (oasisService.loading()) {
+    <div class="absolute inset-0 z-[2000] bg-white flex flex-col items-center justify-center gap-4">
+      <h1 class="text-2xl font-bold text-teal-600">Urban Oasis</h1>
+      <p class="text-sm text-slate-500">Cargando puntos de interés...</p>
+      <div class="w-8 h-8 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
+    </div>
+  }
+
   <div class="absolute inset-0 z-0">
     <app-map-view></app-map-view>
   </div>

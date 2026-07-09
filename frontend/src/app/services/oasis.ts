@@ -14,6 +14,7 @@ export class OasisService {
 
   activeFilter = signal<string>('ALL');
   actualPosition = signal<[number, number, number] | null>(null);
+  loading = signal(true);
   private readonly _oases = signal<OasisSpot[]>([]);
 
   public readonly oases = this._oases.asReadonly();
@@ -47,9 +48,11 @@ export class OasisService {
     this.http.get<OasisSpot[]>(this.apiUrl).subscribe({
       next: (res) => {
         this._oases.set(res);
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Error cargando oasis:', err);
+        this.loading.set(false);
       }
     });
   }
