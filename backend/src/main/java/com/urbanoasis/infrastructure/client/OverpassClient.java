@@ -82,9 +82,6 @@ public class OverpassClient {
                   node[amenity=library](area.searchArea);
                   way[amenity=library](area.searchArea);
                   relation[amenity=library](area.searchArea);
-                  node[amenity=cinema](area.searchArea);
-                  way[amenity=cinema](area.searchArea);
-                  relation[amenity=cinema](area.searchArea);
                   node[shop=mall](area.searchArea);
                   way[shop=mall](area.searchArea);
                   relation[shop=mall](area.searchArea);
