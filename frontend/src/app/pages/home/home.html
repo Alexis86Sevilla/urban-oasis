@@ -14,79 +14,85 @@
 
   <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col gap-2 sm:gap-3">
 
-    <div class="flex flex-row gap-1.5 items-center">
-      @if (wheater()) {
-        <div class="{{temperatureIndicator().class}} pointer-events-none h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
-          <div class="flex flex-col leading-tight">
-            <span class="text-sm sm:text-base font-semibold">{{temperatureIndicator().temp}}</span>
-            <span class="text-[10px] text-slate-700">{{temperatureIndicator().label}}</span>
-          </div>
-        </div>
-
-        <div class="{{windInfo().class}} pointer-events-none h-10 sm:h-11 px-3 backdrop-blur-xl rounded-lg border shadow-sm flex items-center gap-2">
-          <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4 text-slate-500">
-          <div class="flex flex-col leading-tight">
-            <span class="text-sm sm:text-base font-semibold">{{windInfo().speed}}</span>
-            <span class="text-[10px] text-slate-700">{{windInfo().label}}</span>
-          </div>
-        </div>
-
-        @if((wheater()?.temperature ?? 0) >= 40 || (wheater()?.windspeed ?? 0) >= 40) {
-          <div class="pointer-events-none h-10 sm:h-11 px-3 bg-red-300/50 text-red-600 rounded-lg border border-amber-200 shadow-sm flex flex-col md:gap-1 animate-pulse">
-            <div class="flex flex-row items-center gap-1">
-              <img src="icons/map/warning.svg" alt="Precaución" class="w-4 h-4 mt-1">
-              <span class="text-xs font-medium">Precaución</span>
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-row gap-2 items-center">
+        @if (wheater()) {
+          <div class="{{temperatureIndicator().class}} pointer-events-none h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+            </svg>
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm sm:text-base font-bold">{{temperatureIndicator().temp}}</span>
+              <span class="text-[10px] sm:text-xs font-medium opacity-80">{{temperatureIndicator().label}}</span>
             </div>
-            <span class="text-xs font-medium">Clima extremo</span>
+          </div>
+
+          <div class="{{windInfo().class}} pointer-events-none h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
+            <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4">
+            <div class="flex flex-col leading-tight">
+              <span class="text-sm sm:text-base font-bold">{{windInfo().speed}}</span>
+              <span class="text-[10px] sm:text-xs font-medium opacity-80">{{windInfo().label}}</span>
+            </div>
           </div>
         }
-      }
 
-      <button (click)="updateActualPosition()" class="cursor-pointer h-10 sm:h-11 w-10 sm:w-11 rounded-lg bg-white border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 flex items-center justify-center ml-auto">
-        <img src="icons/map/location.svg" alt="Mi ubicación" class="w-5 h-5 text-slate-600">
-      </button>
+        <button (click)="updateActualPosition()" class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white border border-slate-200 shadow-md hover:bg-slate-50 hover:border-slate-300 hover:shadow-lg transition-all duration-200 flex items-center justify-center ml-auto">
+          <img src="icons/map/location.svg" alt="Mi ubicación" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600">
+        </button>
+      </div>
+
+      @if (extremeAlert().show) {
+        <div class="pointer-events-none w-fit h-10 sm:h-11 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full shadow-md flex items-center gap-2 animate-pulse">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span class="text-xs sm:text-sm font-semibold whitespace-nowrap">{{extremeAlert().text}}</span>
+        </div>
+      }
     </div>
 
     <div>
       <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
         <button (click)="filter('ALL')"
+             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
              [class.bg-slate-800]="oasisService.activeFilter() === 'ALL'"
              [class.text-white]="oasisService.activeFilter() === 'ALL'"
              [class.border-slate-800]="oasisService.activeFilter() === 'ALL'"
              [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'ALL'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
+             [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'">
           Todo
         </button>
         <button (click)="filter('WATER_FOUNTAIN')"
+             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
              [class.bg-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
              [class.text-white]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
              [class.border-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
              [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
+             [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'">
           Fuentes
         </button>
         <button (click)="filter('SHADE')"
+             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
              [class.bg-teal-600]="oasisService.activeFilter() === 'SHADE'"
              [class.text-white]="oasisService.activeFilter() === 'SHADE'"
              [class.border-teal-600]="oasisService.activeFilter() === 'SHADE'"
              [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'SHADE'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
+             [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'">
           Sombra
         </button>
         <button (click)="filter('AC_BUILDING')"
+             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
              [class.bg-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
              [class.text-white]="oasisService.activeFilter() === 'AC_BUILDING'"
              [class.border-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
              [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
              [class.text-slate-700]="oasisService.activeFilter() !== 'AC_BUILDING'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'"
-             class="px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 whitespace-nowrap hover:border-slate-400 cursor-pointer">
+             [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'">
           A/A
         </button>
       </div>
@@ -94,9 +100,18 @@
 
   </div>
 
-  <button (click)="showInfo.set(!showInfo())" class="cursor-pointer absolute bottom-4 left-4 z-[1001] w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-600 transition-all duration-200">
+  <div class="absolute bottom-4 left-4 z-[1001] flex flex-col gap-3">
+  <button (click)="showInfo.set(!showInfo())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-600 transition-all duration-200">
     ?
   </button>
+
+  <button (click)="showSupport.set(!showSupport())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center transition-all duration-200">
+    <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+  </button>
+  </div>
+
 
   @if (showInfo()) {
     <div class="absolute inset-0 z-[1002] bg-black/40 flex items-end sm:items-center justify-center" style="padding-bottom: env(safe-area-inset-bottom)" (click)="showInfo.set(false)">
@@ -121,6 +136,25 @@
             <h3 class="font-semibold text-amber-700 mb-1">Sevilla necesita más árboles</h3>
             <p>Esta ciudad tiene muy pocos árboles y refugios climáticos públicos. Si esta app te parece útil, exige a tu ayuntamiento más zonas verdes, fuentes y espacios con aire acondicionado de acceso público.</p>
           </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showSupport()) {
+    <div class="absolute inset-0 z-[1002] bg-black/40 flex items-end sm:items-center justify-center" style="padding-bottom: env(safe-area-inset-bottom)" (click)="showSupport.set(false)">
+      <div class="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-y-auto p-6 pb-10 shadow-xl" (click)="$event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-slate-800">Apoyar el proyecto</h2>
+          <button (click)="showSupport.set(false)" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-600">
+          <p>Urban Oasis no tiene publicidad ni recibe financiación externa. Todo el desarrollo y mantenimiento sale de tiempo y dinero personal.</p>
+          <p>Si el mapa te resulta útil, cualquier contribución ayuda a pagar el servidor y el dominio para que siga disponible para quien lo necesite.</p>
+          <a href="https://ko-fi.com/alexisgarciamancha" target="_blank" rel="noopener" class="block w-full text-center bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200">
+            ☕ Apoyar en Ko-fi
+          </a>
         </div>
       </div>
     </div>

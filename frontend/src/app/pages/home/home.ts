@@ -14,6 +14,7 @@ export class Home {
   protected readonly oasisService = inject(OasisService);
   protected readonly wheater = this.weatherService.weather;
   protected showInfo = signal(false);
+  protected showSupport = signal(false);
   protected readonly temperatureIndicator = computed(() => {
     const temp = Math.round(this.wheater()?.temperature ?? 0) ;
 
@@ -44,6 +45,22 @@ export class Home {
     } else {
       return { speed: wind + ' km/h', class: 'bg-green-200/60 text-slate-700 border-slate-200', label: 'Calmo' };
     }
+  });
+
+  protected readonly extremeAlert = computed(() => {
+    const temp = Math.round(this.wheater()?.temperature ?? 0);
+    const wind = Math.round(this.wheater()?.windspeed ?? 0);
+
+    if (temp >= 40 && wind >= 40) {
+      return { show: true, text: `Alerta extrema: ${temp}°C y ${wind} km/h`, type: 'both' };
+    }
+    if (temp >= 40) {
+      return { show: true, text: `Alerta de Calor Extremo (${temp}°C)`, type: 'heat' };
+    }
+    if (wind >= 40) {
+      return { show: true, text: `Alerta de Viento Extremo (${wind} km/h)`, type: 'wind' };
+    }
+    return { show: false, text: '', type: null };
   });
 
   constructor() {
