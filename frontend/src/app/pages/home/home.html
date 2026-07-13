@@ -36,18 +36,28 @@
           </div>
         }
 
-        <button (click)="updateActualPosition()" class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white border border-slate-200 shadow-md hover:bg-slate-50 hover:border-slate-300 hover:shadow-lg transition-all duration-200 flex items-center justify-center ml-auto">
-          <img src="icons/map/location.svg" alt="Mi ubicación" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-600">
+        <button (click)="updateActualPosition()"
+             class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-md transition-all duration-200 flex items-center justify-center ml-auto relative"
+             [class.bg-teal-50]="oasisService.actualPosition()"
+             [class.border-teal-500]="oasisService.actualPosition()"
+             [class.bg-white]="!oasisService.actualPosition()"
+             [class.border-slate-200]="!oasisService.actualPosition()"
+             [class.hover:bg-slate-50]="!oasisService.actualPosition()"
+             [class.hover:border-slate-300]="!oasisService.actualPosition()"
+             [class.border-2]="oasisService.actualPosition()">
+          <img src="icons/map/location.svg" alt="Mi ubicación" class="w-4 h-4 sm:w-5 sm:h-5">
+          @if (oasisService.actualPosition()) {
+            <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-teal-500 rounded-full border-2 border-white"></span>
+          }
         </button>
       </div>
 
       @if (extremeAlert().show) {
-        <div class="pointer-events-none w-fit h-10 sm:h-11 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full shadow-md flex items-center gap-2 animate-pulse">
-          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
+        <div class="pointer-events-none w-fit h-10 sm:h-11 pl-3 pr-4 bg-red-50 border border-red-200 text-red-700 rounded-full shadow-sm flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+          </span>
           <span class="text-xs sm:text-sm font-semibold whitespace-nowrap">{{extremeAlert().text}}</span>
         </div>
       }
