@@ -1,6 +1,7 @@
 {
-  "name": "Urban Oasis",
-  "short_name": "UrbanOasis",
+  "name": "Urban Oasis — Refugios climáticos en Sevilla",
+  "short_name": "Urban Oasis",
+  "description": "Mapa de Sevilla con fuentes de agua, sombra y aire acondicionado. Refugios contra el calor extremo.",
   "theme_color": "#0d9488",
   "background_color": "#ffffff",
   "display": "standalone",
