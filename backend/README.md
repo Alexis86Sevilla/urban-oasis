@@ -40,27 +40,32 @@ src/main/java/com/urbanoasis/
 
 Ver [README principal](../README.md#api-endpoints) para lista completa.
 
-### Seed manual
+## Configuración
 
-Los datos se cargan desde la máquina local (Overpass está rate-limiteado para IPs de cloud). Para cada tipo de oasis:
-
-1. Ejecutar la query en Postman contra `https://overpass-api.de/api/interpreter`
-2. Copiar el array `elements` de la respuesta
-3. Hacer `POST /api/oasis/seed?type={TYPE}` con los elements como JSON body
+| Variable | Requerida | Descripción |
+|----------|-----------|-------------|
+| `ADMIN_API_KEY` | Sí, para escritura | Clave enviada por el cliente en la cabecera `X-API-Key` para autenticar `POST`/`PUT`/`DELETE` en `/api/oasis/**`. Si no está configurada (o está vacía), esos endpoints quedan deshabilitados y responden `401 Unauthorized` (fail closed). `GET /api/oasis`, `GET /api/oasis/{id}` y las peticiones `OPTIONS` de CORS preflight siempre quedan públicas. No hay ningún valor real de esta clave en el repositorio. |
+| `DATABASE_URL` / `DATABASE_USERNAME` / `DATABASE_PASSWORD` | Sí | Conexión PostgreSQL |
+| `JPA_DDL_AUTO` | No | Estrategia de Hibernate DDL (por defecto `update`) |
+| `CORS_ORIGINS` | No | Orígenes permitidos por CORS (por defecto `http://localhost:4200,https://urban-oasis.info,https://www.urban-oasis.info`) |
+| `PORT` | No | Puerto del servidor (por defecto `8080`) |
 
 ## Scheduler
 
 - `SyncScheduler`: cron `0 0 3,15 * * *` (3 AM y 3 PM)
-- `SyncRunner`: al arrancar, si la DB está vacía, avisa que hay que seedear
+- `SyncRunner`: al arrancar, si la DB está vacía, ejecuta la sincronización inicial automáticamente
 - Overpass está rate-limiteado para IPs de cloud; el scheduler funciona cuando la IP no está baneada
 
 ## Despliegue
 
-Definido en `render.yaml` (raíz del proyecto):
+Definido en `.github/workflows/deploy.yml`: build de la JAR, copia por SCP y reinicio del servicio `systemd` en una VPS propia.
 
-- Web service Docker en plan free
-- PostgreSQL managed en Render
-- Conexión automática vía `fromDatabase`
+El servicio `urban-oasis` ejecuta la JAR desde `/opt/urban-oasis/` bajo el usuario de sistema
+`urbanoasis` (sin shell ni home), no como `root`. Las variables de entorno se leen de
+`/opt/urban-oasis/.env`, con permisos `640` y propiedad `urbanoasis:urbanoasis`.
+
+Antes de reiniciar el servicio, el workflow ejecuta `chown urbanoasis:urbanoasis` sobre la JAR
+recién copiada: sin ese paso llegaría con propiedad `root` y el servicio no podría leerla.
 
 ## Convenciones
 
