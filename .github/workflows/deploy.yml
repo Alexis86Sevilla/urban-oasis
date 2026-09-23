@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   backend:
     name: Build and deploy backend
@@ -38,7 +41,9 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script: systemctl restart urban-oasis
+          script: |
+            chown urbanoasis:urbanoasis /opt/urban-oasis/backend-0.0.1-SNAPSHOT.jar
+            systemctl restart urban-oasis
 
   frontend:
     name: Build and deploy frontend
