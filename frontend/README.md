@@ -41,7 +41,7 @@ src/
 El frontend detecta automáticamente el entorno:
 
 - `localhost` → `http://localhost:8080/api/oasis`
-- Producción → `https://urban-oasis-backend.onrender.com/api/oasis`
+- Producción → `https://urban-oasis.info/api/oasis`
 
 ## Convenciones
 

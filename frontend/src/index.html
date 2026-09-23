@@ -7,6 +7,16 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0d9488">
+  <!--
+    Content-Security-Policy: a meta tag is a fallback. Serving this as a real
+    HTTP response header from the web server (nginx/Caddy/etc.) is preferable
+    to a meta tag, but the web-server config is not part of this repository.
+    Note: frame-ancestors is ignored when CSP is delivered via a meta tag, so
+    real clickjacking protection requires an HTTP header.
+    http://localhost:8080 in connect-src is only reachable in local development.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://urban-oasis.info https://api.open-meteo.com http://localhost:8080; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; object-src 'none'">
+
   <meta name="description" content="Mapa de Sevilla con fuentes de agua potable, zonas de sombra y edificios con aire acondicionado. Encuentra refugios contra el calor extremo.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="manifest" href="manifest.json">
@@ -78,8 +88,6 @@
     }
 
   </style>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 </head>
 
 <body>

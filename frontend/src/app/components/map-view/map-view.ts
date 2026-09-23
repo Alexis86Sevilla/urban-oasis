@@ -24,10 +24,6 @@ export class MapView implements AfterViewInit {
   private userCircleAccuracy: any = undefined;
 
   constructor() {
-    window.addEventListener('uo:requestLocation', () => {
-      this.oasisService.updateActualPosition();
-    });
-
     effect(() => {
       const oases = this.oasisService.filteredOases();
       const ready = this.isMapReady();
@@ -75,7 +71,7 @@ export class MapView implements AfterViewInit {
         } else {
           actionHtml = `
             <div class="px-3 pb-3">
-              <button type="button" onclick="window.dispatchEvent(new CustomEvent('uo:requestLocation'))" class="w-full text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 shadow-sm px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
+              <button type="button" class="uo-request-location-btn w-full text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 shadow-sm px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"/>
                   <circle cx="12" cy="12" r="4"/>
@@ -87,6 +83,9 @@ export class MapView implements AfterViewInit {
           `;
         }
 
+        const safeName = this.escapeHtml(o.name);
+        const safeTypeLabel = this.escapeHtml(this.getTypeLabel(o.type));
+
         L.marker([o.latitude, o.longitude], { icon: this.getIconForType(o.type) })
           .bindPopup(`
             <div class="p-0 min-w-[220px] max-w-[280px] font-sans">
@@ -95,8 +94,8 @@ export class MapView implements AfterViewInit {
                   ${emoji}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <div class="font-bold text-slate-800 text-base leading-tight mb-0.5">${o.name}</div>
-                  <p class="text-sm text-slate-500 m-0">${this.getTypeLabel(o.type)}</p>
+                  <div class="font-bold text-slate-800 text-base leading-tight mb-0.5">${safeName}</div>
+                  <p class="text-sm text-slate-500 m-0">${safeTypeLabel}</p>
                 </div>
               </div>
               ${actionHtml}
@@ -152,6 +151,13 @@ export class MapView implements AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
+    this.map.on('popupopen', (e: any) => {
+      const button = e.popup?.getElement()?.querySelector('.uo-request-location-btn');
+      button?.addEventListener('click', () => {
+        this.oasisService.updateActualPosition();
+      });
+    });
+
     this.clusterGroup.addTo(this.map);
 
     this.isMapReady.set(true);
@@ -198,6 +204,15 @@ private getTypeLabel(type: OasisSpotType): string {
     [OasisSpotType.AC_BUILDING]: 'Edificio con A/A'
   };
   return labels[type] || type;
+}
+
+private escapeHtml(value: string): string {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 private getUserIcon(): any {
