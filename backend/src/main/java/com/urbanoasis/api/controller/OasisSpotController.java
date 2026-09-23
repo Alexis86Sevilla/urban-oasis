@@ -1,9 +1,10 @@
 package com.urbanoasis.api.controller;
 
+import com.urbanoasis.api.dto.OasisSpotRequest;
 import com.urbanoasis.domain.model.OasisSpot;
 import com.urbanoasis.domain.model.OasisType;
 import com.urbanoasis.domain.service.OasisSpotService;
-import com.urbanoasis.infrastructure.client.dto.OverpassElement;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,18 +29,21 @@ public class OasisSpotController {
     @GetMapping("/{id}")
     public ResponseEntity<OasisSpot> getById(@PathVariable Long id) {
         OasisSpot oasisSpot = oasisSpotService.getSpotById(id);
+        if (oasisSpot == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().body(oasisSpot);
     }
 
     @PostMapping
-    public ResponseEntity<OasisSpot> create(@RequestBody OasisSpot spot) {
-        OasisSpot savedSpot = oasisSpotService.save(spot);
+    public ResponseEntity<OasisSpot> create(@Valid @RequestBody OasisSpotRequest request) {
+        OasisSpot savedSpot = oasisSpotService.save(toEntity(request));
         return ResponseEntity.ok().body(savedSpot);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OasisSpot> update(@PathVariable Long id, @RequestBody OasisSpot spot) {
-        return oasisSpotService.updateById(id, spot)
+    public ResponseEntity<OasisSpot> update(@PathVariable Long id, @Valid @RequestBody OasisSpotRequest request) {
+        return oasisSpotService.updateById(id, toEntity(request))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -62,15 +66,19 @@ public class OasisSpotController {
         return ResponseEntity.ok("Data synchronized from Overpass API");
     }
 
-    @PostMapping("/seed")
-    public ResponseEntity<String> seed(@RequestBody List<OverpassElement> elements, @RequestParam OasisType type) {
-        int saved = oasisSpotService.seedFromOverpass(elements, type);
-        return ResponseEntity.ok("Seeded " + saved + " " + type + " spots");
-    }
-
     @DeleteMapping("/type/{type}")
     public ResponseEntity<String> deleteByType(@PathVariable OasisType type) {
         oasisSpotService.deleteByType(type);
         return ResponseEntity.ok("Deleted all " + type + " spots");
+    }
+
+    private OasisSpot toEntity(OasisSpotRequest request) {
+        OasisSpot spot = new OasisSpot();
+        spot.setName(request.getName());
+        spot.setType(request.getType());
+        spot.setLatitude(request.getLatitude());
+        spot.setLongitude(request.getLongitude());
+        spot.setAvailable(request.isAvailable());
+        return spot;
     }
 }
