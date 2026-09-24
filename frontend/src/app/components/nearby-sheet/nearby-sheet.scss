@@ -1,0 +1,73 @@
+:host {
+  --uo-sheet-peek: 96px;
+  --uo-sheet-half: 45dvh;
+  --uo-sheet-full: 88dvh;
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  display: block;
+  height: var(--uo-sheet-full);
+
+  /* The host box spans the sheet's full travel, but it must never intercept
+     a tap meant for the map behind it. Only the surface below opts back in.
+     Without this the sheet is modal in practice even when it looks like it
+     is only peeking. */
+  pointer-events: none;
+}
+
+.uo-sheet-surface {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  background: white;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.15);
+
+  /* `transform` is the only property this component animates or drives.
+     Animating a layout property such as `bottom`/`top`/`height` here is what
+     froze the renderer over the Leaflet map in the CDK attempt — see
+     sdd/frontend-ux-redesign/decision-hand-rolled-sheet.
+     It is bound on THIS element rather than on the host: a host-level
+     [style.transform] binding did not reach the parsed inline declaration
+     block and was silently dropped. */
+  transition: transform 0.25s ease-out;
+  will-change: transform;
+}
+
+/* Suppress the settle transition while a pointer drag is in progress, so it
+   never fights the pointer. */
+:host(.uo-sheet--dragging) .uo-sheet-surface {
+  transition: none;
+}
+
+.uo-sheet-handle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.uo-sheet-handle:active {
+  cursor: grabbing;
+}
+
+.uo-sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgb(203 213 225);
+}
+
+.uo-sheet-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  touch-action: pan-y;
+  padding: 0 1rem 1rem;
+}

@@ -4,10 +4,11 @@ import { OasisService } from '../../services/oasis';
 import { WeatherService } from '../../services/wheater';
 import { LocationService } from '../../services/location';
 import { Announcer } from '../../services/announcer';
+import { NearbySheet } from '../../components/nearby-sheet/nearby-sheet';
 
 @Component({
   selector: 'app-home',
-  imports: [MapView],
+  imports: [MapView, NearbySheet],
   templateUrl: './home.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

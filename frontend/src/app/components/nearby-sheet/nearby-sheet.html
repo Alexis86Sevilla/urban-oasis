@@ -1,0 +1,18 @@
+<!-- The host is an inert full-height layer (pointer-events: none). Only this
+     surface is interactive and only this surface is ever transformed. -->
+<div class="uo-sheet-surface" [style.transform]="transformValue()">
+  <div
+    class="uo-sheet-handle"
+    (pointerdown)="onHandlePointerDown($event)"
+    (pointermove)="onHandlePointerMove($event)"
+    (pointerup)="onHandlePointerUp($event)"
+    (pointercancel)="onHandlePointerUp($event)"
+  >
+    <span class="uo-sheet-grip" aria-hidden="true"></span>
+  </div>
+
+  <div class="uo-sheet-content">
+    <!-- Slice 3b renders the ranked spot list, loading/error/empty states,
+         and the relocated footer identity content here. -->
+  </div>
+</div>
