@@ -65,6 +65,11 @@
   background: rgb(203 213 225);
 }
 
+.uo-sheet-filters {
+  flex: none;
+  padding: 0 1rem 0.5rem;
+}
+
 .uo-sheet-content {
   flex: 1 1 auto;
   overflow-y: auto;

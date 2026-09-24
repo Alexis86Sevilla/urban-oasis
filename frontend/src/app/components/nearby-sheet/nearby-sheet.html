@@ -11,6 +11,12 @@
     <span class="uo-sheet-grip" aria-hidden="true"></span>
   </div>
 
+  <!-- Filter controls are projected here by the host: they belong next to
+       the list they filter, and they must not scroll away with it. -->
+  <div class="uo-sheet-filters">
+    <ng-content select="[sheetFilters]"></ng-content>
+  </div>
+
   <div class="uo-sheet-content">
     <h2 id="uo-sheet-heading" class="text-lg font-bold text-slate-800 mb-2">Puntos cercanos</h2>
 

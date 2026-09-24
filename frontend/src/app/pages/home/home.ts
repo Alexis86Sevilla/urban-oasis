@@ -4,7 +4,7 @@ import { OasisService } from '../../services/oasis';
 import { WeatherService } from '../../services/wheater';
 import { LocationService } from '../../services/location';
 import { Announcer } from '../../services/announcer';
-import { NearbySheet } from '../../components/nearby-sheet/nearby-sheet';
+import { NearbySheet, SheetSnap } from '../../components/nearby-sheet/nearby-sheet';
 
 @Component({
   selector: 'app-home',
@@ -20,8 +20,15 @@ export class Home {
   protected readonly wheater = this.weatherService.weather;
   protected showInfo = signal(false);
   protected showSupport = signal(false);
+  protected readonly currentYear = new Date().getFullYear();
   /** Shown once, the first time the locate control is tapped with no prior decision. */
   protected showLocationExplainer = signal(false);
+  /**
+   * Owned here (not just inside `NearbySheet`) so the thumb-zone controls
+   * know when the sheet has risen past `peek` and dock themselves out of the
+   * way instead of sitting underneath the sheet's opaque surface.
+   */
+  protected readonly sheetSnap = signal<SheetSnap>('peek');
   private readonly confirmLocationBtn = viewChild<ElementRef<HTMLButtonElement>>('confirmLocationBtn');
   protected readonly temperatureIndicator = computed(() => {
     const temp = Math.round(this.wheater()?.temperature ?? 0) ;

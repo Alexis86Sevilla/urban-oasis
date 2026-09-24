@@ -13,44 +13,142 @@
   </div>
 
   <app-nearby-sheet
+    [(snap)]="sheetSnap"
     [spots]="oasisService.rankedSpots()"
     [selectedId]="oasisService.selectedSpotId()"
     [status]="oasisService.status()"
     [locationStatus]="locationService.status()"
     (spotSelected)="oasisService.select($event)"
     (retryRequested)="oasisService.retry()"
-  ></app-nearby-sheet>
+  >
+    <div sheetFilters class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+            <button (click)="filter('ALL')"
+                 type="button"
+                 aria-label="Mostrar todos los puntos"
+                 [attr.aria-pressed]="oasisService.activeFilter() === 'ALL'"
+                 class="cursor-pointer min-h-11 flex items-center gap-1.5 rounded-full px-4 text-sm font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
+                 [class.bg-slate-800]="oasisService.activeFilter() === 'ALL'"
+                 [class.text-white]="oasisService.activeFilter() === 'ALL'"
+                 [class.border-slate-800]="oasisService.activeFilter() === 'ALL'"
+                 [class.border-2]="oasisService.activeFilter() === 'ALL'"
+                 [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
+                 [class.text-slate-700]="oasisService.activeFilter() !== 'ALL'"
+                 [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'">
+              @if (oasisService.activeFilter() === 'ALL') {
+                <svg class="w-3.5 h-3.5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+              }
+              Todo
+            </button>
+            <button (click)="filter('WATER_FOUNTAIN')"
+                 type="button"
+                 aria-label="Filtrar por fuentes de agua"
+                 [attr.aria-pressed]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+                 class="cursor-pointer min-h-11 flex items-center gap-1.5 rounded-full px-4 text-sm font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
+                 [class.bg-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+                 [class.text-white]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+                 [class.border-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+                 [class.border-2]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
+                 [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
+                 [class.text-slate-700]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
+                 [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'">
+              @if (oasisService.activeFilter() === 'WATER_FOUNTAIN') {
+                <svg class="w-3.5 h-3.5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+              }
+              Fuentes
+            </button>
+            <button (click)="filter('SHADE')"
+                 type="button"
+                 aria-label="Filtrar por zonas de sombra"
+                 [attr.aria-pressed]="oasisService.activeFilter() === 'SHADE'"
+                 class="cursor-pointer min-h-11 flex items-center gap-1.5 rounded-full px-4 text-sm font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
+                 [class.bg-teal-600]="oasisService.activeFilter() === 'SHADE'"
+                 [class.text-white]="oasisService.activeFilter() === 'SHADE'"
+                 [class.border-teal-600]="oasisService.activeFilter() === 'SHADE'"
+                 [class.border-2]="oasisService.activeFilter() === 'SHADE'"
+                 [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
+                 [class.text-slate-700]="oasisService.activeFilter() !== 'SHADE'"
+                 [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'">
+              @if (oasisService.activeFilter() === 'SHADE') {
+                <svg class="w-3.5 h-3.5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+              }
+              Sombra
+            </button>
+            <button (click)="filter('AC_BUILDING')"
+                 type="button"
+                 aria-label="Filtrar por edificios con aire acondicionado"
+                 [attr.aria-pressed]="oasisService.activeFilter() === 'AC_BUILDING'"
+                 class="cursor-pointer min-h-11 flex items-center gap-1.5 rounded-full px-4 text-sm font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
+                 [class.bg-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
+                 [class.text-white]="oasisService.activeFilter() === 'AC_BUILDING'"
+                 [class.border-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
+                 [class.border-2]="oasisService.activeFilter() === 'AC_BUILDING'"
+                 [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
+                 [class.text-slate-700]="oasisService.activeFilter() !== 'AC_BUILDING'"
+                 [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'">
+              @if (oasisService.activeFilter() === 'AC_BUILDING') {
+                <svg class="w-3.5 h-3.5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.9 3.9 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+              }
+              A/A
+            </button>
+          </div>
+  </app-nearby-sheet>
 
-  <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col gap-2 sm:gap-3">
-
-    <div class="flex flex-col gap-2">
+  <!-- Informational only (read, not tapped): safe to keep at the top, out of
+       one-handed thumb reach. -->
+  <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col gap-2 sm:gap-3 pointer-events-none">
+    @if (wheater()) {
       <div class="flex flex-row gap-2 items-center">
-        @if (wheater()) {
-          <div class="{{temperatureIndicator().class}} pointer-events-none h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
-            </svg>
-            <div class="flex flex-col leading-tight">
-              <span class="text-sm sm:text-base font-bold">{{temperatureIndicator().temp}}</span>
-              <span class="text-[10px] sm:text-xs font-medium opacity-80">{{temperatureIndicator().label}}</span>
-            </div>
+        <div class="{{temperatureIndicator().class}} h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+          </svg>
+          <div class="flex flex-col leading-tight">
+            <span class="text-sm sm:text-base font-bold">{{temperatureIndicator().temp}}</span>
+            <span class="text-[10px] sm:text-xs font-medium opacity-80">{{temperatureIndicator().label}}</span>
           </div>
+        </div>
 
-          <div class="{{windInfo().class}} pointer-events-none h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
-            <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4">
-            <div class="flex flex-col leading-tight">
-              <span class="text-sm sm:text-base font-bold">{{windInfo().speed}}</span>
-              <span class="text-[10px] sm:text-xs font-medium opacity-80">{{windInfo().label}}</span>
-            </div>
+        <div class="{{windInfo().class}} h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
+          <img src="icons/map/wind.svg" alt="Viento" class="w-4 h-4">
+          <div class="flex flex-col leading-tight">
+            <span class="text-sm sm:text-base font-bold">{{windInfo().speed}}</span>
+            <span class="text-[10px] sm:text-xs font-medium opacity-80">{{windInfo().label}}</span>
           </div>
-        }
+        </div>
+      </div>
+    }
 
-        <div class="relative ml-auto">
+    @if (extremeAlert().show) {
+      <div class="w-fit h-10 sm:h-11 pl-3 pr-4 bg-red-50 border border-red-200 text-red-700 rounded-full shadow-sm flex items-center gap-2">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+        </span>
+        <span class="text-xs sm:text-sm font-semibold whitespace-nowrap">{{extremeAlert().text}}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Actionable controls (filter chips + locate) live in the thumb zone at
+       the bottom, above the sheet's `peek` strip (96px) and ahead of it in
+       stacking order (z-[1002] > the sheet's 1001). Docked only while the
+       sheet sits at `peek`: at `half`/`full` the sheet's opaque surface rises
+       past this dock's position, so it is hidden rather than left floating,
+       unreachable-looking, on top of the list. Collapsing the sheet back to
+       `peek` (drag handle or Escape) restores it. -->
+  @if (sheetSnap() === 'peek') {
+    <div
+      class="fixed inset-x-0 z-[1002] px-4 sm:px-6 lg:px-12 xl:px-20"
+      style="bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 0.75rem)"
+    >
+      <div class="flex justify-end">
+
+        <div class="relative flex-none">
           <button (click)="onLocateClick()"
                type="button"
                aria-label="Activar mi ubicación"
                [attr.aria-pressed]="locationService.status() === 'granted'"
-               class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-md transition-all duration-200 flex items-center justify-center relative"
+               class="cursor-pointer h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-md transition-all duration-200 flex items-center justify-center relative"
                [class.bg-teal-50]="locationService.status() === 'granted'"
                [class.border-teal-500]="locationService.status() === 'granted'"
                [class.bg-red-50]="locationService.status() === 'denied' || locationService.status() === 'failed-or-timed-out'"
@@ -67,7 +165,7 @@
           </button>
 
           @if (showLocationExplainer()) {
-            <div role="dialog" aria-label="Permiso de ubicación" tabindex="-1" (keydown.escape)="dismissLocationExplainer()" class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+            <div role="dialog" aria-label="Permiso de ubicación" tabindex="-1" (keydown.escape)="dismissLocationExplainer()" class="absolute right-0 bottom-full mb-2 w-64 sm:w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
               <p class="mb-3">Urban Oasis quiere usar tu ubicación para ordenar los puntos por cercanía. Solo se usa en tu dispositivo.</p>
               <div class="flex gap-2 justify-end">
                 <button (click)="dismissLocationExplainer()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50">Ahora no</button>
@@ -75,88 +173,36 @@
               </div>
             </div>
           } @else if (locationService.status() === 'denied') {
-            <div class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-red-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+            <div class="absolute right-0 bottom-full mb-2 w-64 sm:w-72 bg-white border border-red-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
               <p class="mb-2">No se pudo activar tu ubicación. El permiso puede estar bloqueado en el navegador.</p>
               <button (click)="onLocateClick()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium bg-teal-600 text-white hover:bg-teal-700">Reintentar</button>
             </div>
           } @else if (locationService.status() === 'failed-or-timed-out') {
-            <div class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-amber-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+            <div class="absolute right-0 bottom-full mb-2 w-64 sm:w-72 bg-white border border-amber-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
               <p class="mb-2">No se pudo obtener tu ubicación a tiempo. Comprueba tu conexión o el GPS.</p>
               <button (click)="onLocateClick()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium bg-teal-600 text-white hover:bg-teal-700">Reintentar</button>
             </div>
           }
         </div>
       </div>
-
-      @if (extremeAlert().show) {
-        <div class="pointer-events-none w-fit h-10 sm:h-11 pl-3 pr-4 bg-red-50 border border-red-200 text-red-700 rounded-full shadow-sm flex items-center gap-2">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-          </span>
-          <span class="text-xs sm:text-sm font-semibold whitespace-nowrap">{{extremeAlert().text}}</span>
-        </div>
-      }
     </div>
+  }
 
-    <div>
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-        <button (click)="filter('ALL')"
-             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
-             [class.bg-slate-800]="oasisService.activeFilter() === 'ALL'"
-             [class.text-white]="oasisService.activeFilter() === 'ALL'"
-             [class.border-slate-800]="oasisService.activeFilter() === 'ALL'"
-             [class.bg-white]="oasisService.activeFilter() !== 'ALL'"
-             [class.text-slate-700]="oasisService.activeFilter() !== 'ALL'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'ALL'">
-          Todo
-        </button>
-        <button (click)="filter('WATER_FOUNTAIN')"
-             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
-             [class.bg-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-             [class.text-white]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-             [class.border-teal-600]="oasisService.activeFilter() === 'WATER_FOUNTAIN'"
-             [class.bg-white]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-             [class.text-slate-700]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'WATER_FOUNTAIN'">
-          Fuentes
-        </button>
-        <button (click)="filter('SHADE')"
-             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
-             [class.bg-teal-600]="oasisService.activeFilter() === 'SHADE'"
-             [class.text-white]="oasisService.activeFilter() === 'SHADE'"
-             [class.border-teal-600]="oasisService.activeFilter() === 'SHADE'"
-             [class.bg-white]="oasisService.activeFilter() !== 'SHADE'"
-             [class.text-slate-700]="oasisService.activeFilter() !== 'SHADE'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'SHADE'">
-          Sombra
-        </button>
-        <button (click)="filter('AC_BUILDING')"
-             class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 whitespace-nowrap shadow-sm hover:shadow"
-             [class.bg-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
-             [class.text-white]="oasisService.activeFilter() === 'AC_BUILDING'"
-             [class.border-teal-600]="oasisService.activeFilter() === 'AC_BUILDING'"
-             [class.bg-white]="oasisService.activeFilter() !== 'AC_BUILDING'"
-             [class.text-slate-700]="oasisService.activeFilter() !== 'AC_BUILDING'"
-             [class.border-slate-200]="oasisService.activeFilter() !== 'AC_BUILDING'">
-          A/A
-        </button>
-      </div>
+  @if (sheetSnap() === 'peek') {
+    <!-- Kept clear of the sheet peek strip (96px) so it never sits under it. -->
+    <div class="fixed left-4 z-[1002] flex flex-col gap-3"
+         style="bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 0.75rem)">
+    <button (click)="showInfo.set(!showInfo())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-600 transition-all duration-200">
+      ?
+    </button>
+
+    <button (click)="showSupport.set(!showSupport())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center transition-all duration-200">
+      <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+    </button>
     </div>
-
-  </div>
-
-  <div class="absolute bottom-4 left-4 z-[1001] flex flex-col gap-3">
-  <button (click)="showInfo.set(!showInfo())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-600 transition-all duration-200">
-    ?
-  </button>
-
-  <button (click)="showSupport.set(!showSupport())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center transition-all duration-200">
-    <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-  </button>
-  </div>
+  }
 
 
   @if (showInfo()) {
@@ -181,6 +227,19 @@
           <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <h3 class="font-semibold text-amber-700 mb-1">Sevilla necesita más árboles</h3>
             <p>Esta ciudad tiene muy pocos árboles y refugios climáticos públicos. Si esta app te parece útil, exige a tu ayuntamiento más zonas verdes, fuentes y espacios con aire acondicionado de acceso público.</p>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-400">
+            <span>© {{ currentYear }}</span>
+            <a
+              href="https://github.com/Alexis86Sevilla/urban-oasis/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-teal-600 transition-colors underline underline-offset-2"
+              title="Licencia MIT - Permite usar, modificar y distribuir el código con atribución"
+            >
+              Licencia MIT
+            </a>
           </div>
         </div>
       </div>
