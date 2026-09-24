@@ -67,6 +67,21 @@ El servicio `urban-oasis` ejecuta la JAR desde `/opt/urban-oasis/` bajo el usuar
 Antes de reiniciar el servicio, el workflow ejecuta `chown urbanoasis:urbanoasis` sobre la JAR
 recién copiada: sin ese paso llegaría con propiedad `root` y el servicio no podría leerla.
 
+## Migraciones de esquema
+
+Los cambios de esquema se gestionan con [Flyway](https://flywaydb.org/), en
+`backend/src/main/resources/db/migration`. Cada archivo sigue el formato
+`V<version>__descripcion.sql` (por ejemplo, `V1__baseline_oasis_spots.sql`).
+
+- `spring.jpa.hibernate.ddl-auto` es `validate` por defecto: Hibernate solo comprueba
+  que el esquema coincide con las entidades, ya no crea ni altera tablas.
+- La base de datos de producción existente se adoptó mediante el baseline de Flyway
+  (`baseline-on-migrate: true`, `baseline-version: 1`): `V1` reproduce el esquema
+  que ya estaba en producción, se registra como ya aplicada y nunca se ejecuta
+  contra producción; solo se ejecuta en bases de datos nuevas.
+- `JPA_DDL_AUTO` sigue permitiendo sobrescribir el modo de Hibernate si alguna vez
+  fuera necesario.
+
 ## Convenciones
 
 - Commits: `type(scope): description` (solo una línea)
