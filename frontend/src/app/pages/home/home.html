@@ -142,7 +142,7 @@
   </div>
 
   <!-- Actionable controls (filter chips + locate) live in the thumb zone at
-       the bottom, above the sheet's `peek` strip (96px) and ahead of it in
+       the bottom, above the sheet's `peek` strip (--uo-sheet-peek) and ahead of it in
        stacking order (z-[1002] > the sheet's 1001). Docked only while the
        sheet sits at `peek`: at `half`/`full` the sheet's opaque surface rises
        past this dock's position, so it is hidden rather than left floating,
@@ -151,7 +151,7 @@
   @if (sheetSnap() === 'peek') {
     <div
       class="fixed inset-x-0 z-[1002] px-4 sm:px-6 lg:px-12 xl:px-20"
-      style="bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 0.75rem)"
+      style="bottom: calc(var(--uo-sheet-peek) + env(safe-area-inset-bottom, 0px) + 0.75rem)"
     >
       <div class="flex justify-end">
 
@@ -201,9 +201,9 @@
   }
 
   @if (sheetSnap() === 'peek') {
-    <!-- Kept clear of the sheet peek strip (96px) so it never sits under it. -->
+    <!-- Kept clear of the sheet peek strip (--uo-sheet-peek) so it never sits under it. -->
     <div class="fixed left-4 z-[1002] flex flex-col gap-3"
-         style="bottom: calc(96px + env(safe-area-inset-bottom, 0px) + 0.75rem)">
+         style="bottom: calc(var(--uo-sheet-peek) + env(safe-area-inset-bottom, 0px) + 0.75rem)">
     <button (click)="showInfo.set(!showInfo())" class="cursor-pointer w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg hover:bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-600 transition-all duration-200">
       ?
     </button>

@@ -74,6 +74,7 @@ export class NearbySheet {
    * row, so the sheet reads as "there is a list here". At 96px the filters
    * were cut off at rest.
    */
+  /** MUST equal `--uo-sheet-peek` in `src/styles.css`. */
   private static readonly PEEK_PX = 168;
   private static readonly HALF_RATIO = 0.45;
   private static readonly FULL_RATIO = 0.88;

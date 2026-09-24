@@ -71,3 +71,12 @@ html, body {
   --uo-accent-soft: var(--color-red-500);
   --uo-urgency-ring: var(--color-red-600);
 }
+
+:root {
+  /* Visible height of the bottom sheet at its resting "peek" snap.
+     Defined globally because the floating map controls must sit clear
+     of it: a second hardcoded copy of this number drifted once already.
+     NearbySheet.PEEK_PX must be kept equal to this value. */
+  --uo-sheet-peek: 168px;
+}
+
