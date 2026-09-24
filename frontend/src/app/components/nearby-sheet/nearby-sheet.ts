@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   computed,
   effect,
   inject,
@@ -63,6 +64,7 @@ export type SheetSnap = 'peek' | 'half' | 'full';
 })
 export class NearbySheet {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** `peek` is a fixed pixel value; `half`/`full` are viewport-height ratios,
    * matching the `--uo-sheet-*` custom properties in the stylesheet. */
@@ -123,6 +125,22 @@ export class NearbySheet {
     effect(() => {
       this.spots();
       untracked(() => this.visibleCount.set(NearbySheet.ROWS_PER_PAGE));
+    });
+
+    // Two-way selection sync, map -> list side. Scrolls the matching row
+    // into view but NEVER moves focus — a keyboard user's focus must stay
+    // exactly where they put it; only their own discrete row activation
+    // moves focus (native <button> behaviour), never this reactive sync.
+    effect(() => {
+      const id = this.selectedId();
+      if (!id) return;
+      untracked(() => {
+        if (this.snap() === 'peek') {
+          this.snap.set('half');
+        }
+        const row = this.elementRef.nativeElement.querySelector<HTMLElement>(`[data-spot-row="${id}"]`);
+        row?.scrollIntoView({ block: 'nearest' });
+      });
     });
   }
 

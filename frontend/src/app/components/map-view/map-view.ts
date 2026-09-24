@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, AfterViewInit, inject, effect, signal } from '@angular/core';
 import { OasisService } from '../../services/oasis';
+import { LocationService } from '../../services/location';
+import { OasisSpot } from '../../models/oasisSpot';
 import { OasisSpotType } from '../../enum/oasisSpotType';
+import { distanceMeters, formatDistance } from '../../utils/geo';
 
 declare var L: any;
 
@@ -19,99 +22,86 @@ export class MapView implements AfterViewInit {
     disableClusteringAtZoom: 17
   });
   private readonly oasisService = inject(OasisService);
+  private readonly locationService = inject(LocationService);
   private isMapReady = signal(false);
   private userMarker: any = undefined;
   private userCircleAccuracy: any = undefined;
 
+  /**
+   * Built once per catalogue load, keyed by spot id. Filter changes diff
+   * against this registry and add/remove already-built layers in bulk
+   * instead of tearing down and recreating every marker — with ~1500 spots,
+   * a `clearLayers()` + rebuild on every filter tap or GPS update is
+   * expensive and was the previous behaviour.
+   */
+  private readonly markers = new Map<string, any>();
+  private selectedMarkerId: string | null = null;
+
   constructor() {
+    // Build the marker registry once per catalogue load. Visibility
+    // (filtering) is handled separately below and never re-enters here.
     effect(() => {
-      const oases = this.oasisService.filteredOases();
+      const oases = this.oasisService.oases();
       const ready = this.isMapReady();
-      const actualPos = this.oasisService.actualPosition();
 
       if (!ready || !this.map) return;
 
       this.clusterGroup.clearLayers();
+      this.markers.clear();
+      this.selectedMarkerId = null;
 
       oases.forEach(o => {
-        let emoji = '📍';
-        let accentClass = 'bg-slate-100 text-slate-700';
+        const marker = L.marker([o.latitude, o.longitude], {
+          icon: this.getIconForType(o.type),
+          // Markers are not the keyboard path — the sheet's row list is.
+          // Keeping them out of the tab order avoids ~1500 unlabeled stops.
+          keyboard: false,
+        });
+        marker.on('click', () => this.oasisService.select(o.id));
+        marker.on('add', () => this.applyMarkerAccessibleName(marker, o));
+        this.markers.set(o.id, marker);
+      });
 
-        if (o.type === OasisSpotType.WATER_FOUNTAIN) {
-          emoji = '💧';
-          accentClass = 'bg-teal-100 text-teal-700';
-        } else if (o.type === OasisSpotType.SHADE) {
-          emoji = '🌳';
-          accentClass = 'bg-green-100 text-green-700';
-        } else if (o.type === OasisSpotType.AC_BUILDING) {
-          emoji = '❄️';
-          accentClass = 'bg-blue-100 text-blue-700';
-        }
+      this.syncVisibleLayers(this.oasisService.filteredOases());
+    });
 
-        let actionHtml = '';
+    // Filter changes: diff the already-built registry and add/remove layers
+    // in bulk rather than rebuilding anything.
+    effect(() => {
+      const filtered = this.oasisService.filteredOases();
+      const ready = this.isMapReady();
 
-        if (actualPos) {
-          const distInMeters = this.map!.distance([o.latitude, o.longitude], actualPos);
-          const distanceText = distInMeters >= 1000
-            ? `${(distInMeters / 1000).toFixed(1)} km`
-            : `${Math.round(distInMeters)} m`;
-          const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${actualPos[0]},${actualPos[1]}&destination=${o.latitude},${o.longitude}&travelmode=walking`;
+      if (!ready || !this.map) return;
 
-          actionHtml = `
-            <div class="px-3 pb-3">
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-medium text-slate-500">Distancia</span>
-                <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">${distanceText}</span>
-              </div>
-              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center w-full px-3 py-2 rounded-lg bg-teal-600 !text-white no-underline text-xs font-semibold shadow-sm hover:bg-teal-700 hover:!text-white transition-colors">
-                Cómo llegar
-              </a>
-            </div>
-          `;
-        } else {
-          actionHtml = `
-            <div class="px-3 pb-3">
-              <button type="button" class="uo-request-location-btn w-full text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 shadow-sm px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <circle cx="12" cy="12" r="4"/>
-                </svg>
-                <span>Activar ubicación</span>
-              </button>
-              <p class="text-[10px] text-slate-500 text-center mt-1.5">Así podrás ver la distancia y cómo llegar caminando</p>
-            </div>
-          `;
-        }
+      this.syncVisibleLayers(filtered);
+    });
 
-        const safeName = this.escapeHtml(o.name);
-        const safeTypeLabel = this.escapeHtml(this.getTypeLabel(o.type));
+    // Position updates only refresh each visible marker's distance in its
+    // `aria-label` (a cheap attribute write) — they never rebuild markers.
+    effect(() => {
+      const position = this.locationService.position();
+      const ready = this.isMapReady();
 
-        L.marker([o.latitude, o.longitude], { icon: this.getIconForType(o.type) })
-          .bindPopup(`
-            <div class="p-0 min-w-[220px] max-w-[280px] font-sans">
-              <div class="flex items-start gap-3 p-3">
-                <div class="w-10 h-10 rounded-full ${accentClass} flex items-center justify-center text-lg shrink-0">
-                  ${emoji}
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="font-bold text-slate-800 text-base leading-tight mb-0.5">${safeName}</div>
-                  <p class="text-sm text-slate-500 m-0">${safeTypeLabel}</p>
-                </div>
-              </div>
-              ${actionHtml}
-            </div>
-          `)
-          .addTo(this.clusterGroup);
+      if (!ready) return;
+
+      this.oasisService.oases().forEach(o => {
+        const marker = this.markers.get(o.id);
+        const el = marker?.getElement();
+        if (!el) return;
+        el.setAttribute('aria-label', this.buildMarkerLabel(o, position));
       });
     });
 
+    // User's own position: marker + accuracy circle, read directly from
+    // `LocationService` now that the popup distance line (the sole reason
+    // this component depended on `OasisService.actualPosition`) is retired.
     effect(() => {
-      const position = this.oasisService.actualPosition();
+      const position = this.locationService.position();
       const ready = this.isMapReady();
 
       if (!ready || !this.map || !position) return;
 
-      const accuracy = position![2];
+      const accuracy = position[2];
 
       if (this.userCircleAccuracy) {
         this.userCircleAccuracy.setLatLng(position);
@@ -129,12 +119,39 @@ export class MapView implements AfterViewInit {
       if (this.userMarker) {
         this.userMarker.setLatLng(position)
       } else {
-        this.userMarker = L.marker(position, { icon: this.getUserIcon() }).addTo(this.map);
+        this.userMarker = L.marker(position, { icon: this.getUserIcon(), keyboard: false }).addTo(this.map);
       }
 
       this.map.flyTo(position, 18, {
         animate: true,
         duration: 0.5
+      });
+    });
+
+    // Two-way selection sync, list -> map side. Bring the selected marker
+    // into view without slamming to a fixed zoom level — `zoomToShowLayer`
+    // handles a marker that may currently be collapsed inside a cluster and
+    // therefore has no DOM element yet; `panTo` (not `flyTo(pos, 18)`, which
+    // is disorienting for a list tap) settles the view once revealed.
+    effect(() => {
+      const selectedId = this.oasisService.selectedSpotId();
+      const ready = this.isMapReady();
+
+      if (!ready || !this.map) return;
+
+      if (this.selectedMarkerId && this.selectedMarkerId !== selectedId) {
+        this.markers.get(this.selectedMarkerId)?.getElement()?.classList.remove('uo-marker-selected');
+      }
+      this.selectedMarkerId = selectedId;
+
+      if (!selectedId) return;
+
+      const marker = this.markers.get(selectedId);
+      if (!marker) return;
+
+      this.clusterGroup.zoomToShowLayer(marker, () => {
+        this.map.panTo(marker.getLatLng());
+        marker.getElement()?.classList.add('uo-marker-selected');
       });
     });
   }
@@ -151,13 +168,6 @@ export class MapView implements AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.map.on('popupopen', (e: any) => {
-      const button = e.popup?.getElement()?.querySelector('.uo-request-location-btn');
-      button?.addEventListener('click', () => {
-        this.oasisService.updateActualPosition();
-      });
-    });
-
     this.clusterGroup.addTo(this.map);
 
     this.isMapReady.set(true);
@@ -165,6 +175,43 @@ export class MapView implements AfterViewInit {
     setTimeout(() => {
       this.map?.invalidateSize();
     }, 100);
+  }
+
+  /** Diffs `filtered` against the built registry and moves layers in bulk. */
+  private syncVisibleLayers(filtered: readonly OasisSpot[]): void {
+    const visibleIds = new Set(filtered.map(o => o.id));
+    const toAdd: any[] = [];
+    const toRemove: any[] = [];
+
+    this.markers.forEach((marker, id) => {
+      const isOnMap = this.clusterGroup.hasLayer(marker);
+      const shouldBeVisible = visibleIds.has(id);
+      if (shouldBeVisible && !isOnMap) {
+        toAdd.push(marker);
+      } else if (!shouldBeVisible && isOnMap) {
+        toRemove.push(marker);
+      }
+    });
+
+    if (toAdd.length) this.clusterGroup.addLayers(toAdd);
+    if (toRemove.length) this.clusterGroup.removeLayers(toRemove);
+  }
+
+  private applyMarkerAccessibleName(marker: any, spot: OasisSpot): void {
+    const el = marker.getElement();
+    if (!el) return;
+    el.setAttribute('role', 'img');
+    el.setAttribute('aria-label', this.buildMarkerLabel(spot, this.locationService.position()));
+  }
+
+  private buildMarkerLabel(spot: OasisSpot, position: [number, number, number] | null): string {
+    const availability = spot.available ? 'Disponible' : 'Fuera de servicio';
+    const typeLabel = this.getTypeLabel(spot.type);
+    if (!position) {
+      return `${spot.name}. ${typeLabel}. ${availability}.`;
+    }
+    const distanceLabel = formatDistance(distanceMeters([position[0], position[1]], [spot.latitude, spot.longitude]));
+    return `${spot.name}. ${typeLabel}. ${distanceLabel}. ${availability}.`;
   }
 
   private getIconForType(type: OasisSpotType): any {
@@ -193,7 +240,6 @@ export class MapView implements AfterViewInit {
       className: 'custom-map-icon',
       iconSize: [32, 32],
       iconAnchor: [16, 16],
-      popupAnchor: [0, -16]
     });
 }
 
@@ -204,15 +250,6 @@ private getTypeLabel(type: OasisSpotType): string {
     [OasisSpotType.AC_BUILDING]: 'Edificio con A/A'
   };
   return labels[type] || type;
-}
-
-private escapeHtml(value: string): string {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
 
 private getUserIcon(): any {
@@ -227,7 +264,6 @@ private getUserIcon(): any {
       className: 'custom-map-icon',
       iconSize: [32, 32],
       iconAnchor: [16, 16],
-      popupAnchor: [0, -16]
     });
   }
 }

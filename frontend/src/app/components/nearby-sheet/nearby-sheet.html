@@ -44,6 +44,7 @@
                   type="button"
                   class="cursor-pointer w-full h-12 flex items-center justify-between gap-3 px-3 py-1.5 rounded-xl border transition-colors duration-200"
                   [class]="rowStateClasses(ranked.spot.id)"
+                  [attr.data-spot-row]="ranked.spot.id"
                   [attr.aria-current]="ranked.spot.id === selectedId() ? 'true' : null"
                   (click)="selectSpot(ranked.spot)"
                 >

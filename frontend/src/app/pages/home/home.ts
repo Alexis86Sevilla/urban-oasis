@@ -104,18 +104,6 @@ export class Home {
         this.announcer.announce('No se pudo obtener tu ubicación a tiempo.', 'assertive');
       }
     });
-
-    // Temporary bridge (documented deviation, see apply-progress): MapView
-    // still reads OasisService.actualPosition for its popup distance line
-    // and user marker, and is not migrated to LocationService until slice 4
-    // (popup retirement). Until then, mirror a granted position across so
-    // that existing map behaviour does not regress in the interim.
-    effect(() => {
-      const position = this.locationService.position();
-      if (position) {
-        this.oasisService.actualPosition.set(position);
-      }
-    });
   }
 
   /** Spanish labels matching the filter chips in the template. */

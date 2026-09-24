@@ -25,7 +25,6 @@ export class OasisService {
     : 'https://urban-oasis.info/api/oasis';
 
   activeFilter = signal<string>('ALL');
-  actualPosition = signal<[number, number, number] | null>(null);
 
   private readonly _status = signal<OasisStatus>('loading');
   public readonly status = this._status.asReadonly();
@@ -95,22 +94,6 @@ export class OasisService {
   public retry(): void {
     this._status.set('loading');
     this.loadOasesFromBackend();
-  }
-
-  public updateActualPosition() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        this.actualPosition.set([position.coords.latitude, position.coords.longitude, position.coords.accuracy]);
-      },
-      (error) => {
-        console.warn('No se pudo obtener la ubicación:', error.message);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 10000
-      }
-    );
   }
 
   private loadOasesFromBackend(): void {

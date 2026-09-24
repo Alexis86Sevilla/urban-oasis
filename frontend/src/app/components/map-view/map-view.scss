@@ -3,3 +3,11 @@
     display: none !important;
   }
 }
+
+/* Selection sync visual state (list <-> map). Leaflet renders marker icons
+   outside Angular's view encapsulation, hence ::ng-deep. */
+:host ::ng-deep .custom-map-icon.uo-marker-selected {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
