@@ -17,7 +17,8 @@ import java.security.MessageDigest;
 
 /**
  * Requires a valid {@code X-API-Key} header on every mutating request under
- * {@code /api/oasis/**}. GET requests and CORS preflight (OPTIONS) stay public
+ * {@code /api/oasis/**}. Safe read methods (GET, HEAD) and CORS preflight
+ * (OPTIONS) stay public
  * so the read-only contract used by the frontend keeps working unchanged.
  *
  * <p>Fails closed: if {@code admin.api-key} is not configured, every
@@ -47,7 +48,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String method = request.getMethod();
-        if (HttpMethod.GET.matches(method) || HttpMethod.OPTIONS.matches(method)) {
+        if (HttpMethod.GET.matches(method) || HttpMethod.HEAD.matches(method) || HttpMethod.OPTIONS.matches(method)) {
             filterChain.doFilter(request, response);
             return;
         }

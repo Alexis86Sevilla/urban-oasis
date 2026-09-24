@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,6 +81,12 @@ class ApiKeyAuthFilterSecurityTest {
     @Test
     void getAllStaysPublic() throws Exception {
         mockMvc.perform(get("/api/oasis"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void headStaysPublic() throws Exception {
+        mockMvc.perform(head("/api/oasis"))
                 .andExpect(status().isOk());
     }
 
