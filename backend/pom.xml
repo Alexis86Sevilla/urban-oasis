@@ -82,6 +82,19 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Keep the startup Overpass sync (SyncRunner) disabled during
+					     tests: it fires real network calls to overpass-api.de and
+					     sleeps for 60s whenever the oasis_spot table is empty. This
+					     only affects the test run, not the packaged application. -->
+					<systemPropertyVariables>
+						<overpass.sync.enabled>false</overpass.sync.enabled>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<executions>
 					<execution>

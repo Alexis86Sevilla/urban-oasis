@@ -5,10 +5,12 @@ import com.urbanoasis.domain.service.OasisSpotService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "overpass.sync.enabled", havingValue = "true", matchIfMissing = true)
 public class SyncRunner implements ApplicationRunner {
 
     private final OasisSpotService oasisSpotService;
