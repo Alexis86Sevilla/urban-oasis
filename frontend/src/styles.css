@@ -22,3 +22,52 @@ html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/*
+ * Temperature-reactive theme (design D-9). `App` binds `[attr.data-temp-band]`
+ * on the root element from `WeatherService.band` — one shared signal, reused
+ * across the five existing thresholds plus the 40° heat-or-wind extreme tier.
+ * Tailwind 4 is CSS-first here (no config file) and already exposes its
+ * palette as `--color-*` custom properties, so redefining `--uo-*` per band
+ * in ONE place covers every consumer through ordinary CSS inheritance —
+ * deliberately not per-utility `data-[temp-band=...]:` variants repeated at
+ * every call site. `--uo-urgency-ring` stays `transparent` outside `extreme`
+ * so consumers can bake it into an always-present box-shadow/outline with no
+ * conditional class of their own.
+ */
+:root {
+  --uo-accent: var(--color-teal-600);
+  --uo-accent-soft: var(--color-teal-400);
+  --uo-urgency-ring: transparent;
+}
+
+[data-temp-band='cold'] {
+  --uo-accent: var(--color-blue-700);
+  --uo-accent-soft: var(--color-blue-400);
+}
+
+[data-temp-band='cool'] {
+  --uo-accent: var(--color-sky-600);
+  --uo-accent-soft: var(--color-sky-400);
+}
+
+[data-temp-band='mild'] {
+  --uo-accent: var(--color-teal-600);
+  --uo-accent-soft: var(--color-teal-400);
+}
+
+[data-temp-band='warm'] {
+  --uo-accent: var(--color-orange-600);
+  --uo-accent-soft: var(--color-orange-400);
+}
+
+[data-temp-band='hot'] {
+  --uo-accent: var(--color-red-600);
+  --uo-accent-soft: var(--color-red-400);
+}
+
+[data-temp-band='extreme'] {
+  --uo-accent: var(--color-red-700);
+  --uo-accent-soft: var(--color-red-500);
+  --uo-urgency-ring: var(--color-red-600);
+}

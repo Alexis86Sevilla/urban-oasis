@@ -25,7 +25,11 @@
   pointer-events: auto;
   background: white;
   border-radius: 1rem 1rem 0 0;
-  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.15);
+  /* `--uo-urgency-ring` (see styles.css, design D-9) stays `transparent`
+     outside the shared `extreme` temperature band, so this ring is always
+     declared but only ever visible during an extreme reading — no
+     conditional class, and never an animated property. */
+  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.15), 0 0 0 3px var(--uo-urgency-ring, transparent);
 
   /* `transform` is the only property this component animates or drives.
      Animating a layout property such as `bottom`/`top`/`height` here is what
@@ -62,7 +66,10 @@
   width: 36px;
   height: 4px;
   border-radius: 9999px;
-  background: rgb(203 213 225);
+  /* Ambient theming only (design D-9) — the grip carries no information of
+     its own, so it may safely be colour-only; the actual temperature cue
+     (wording + icon) lives on `Home`'s badge, never on this decoration. */
+  background: var(--uo-accent-soft, rgb(203 213 225));
 }
 
 .uo-sheet-filters {

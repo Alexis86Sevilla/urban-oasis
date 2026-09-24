@@ -5,9 +5,12 @@
 }
 
 /* Selection sync visual state (list <-> map). Leaflet renders marker icons
-   outside Angular's view encapsulation, hence ::ng-deep. */
+   outside Angular's view encapsulation, hence ::ng-deep.
+   `--uo-accent` (design D-9) ties the selected-marker outline to the shared
+   temperature band via ordinary CSS inheritance from the root — the map
+   "reads" the same shared state as the badge/sheet with zero new JS. */
 :host ::ng-deep .custom-map-icon.uo-marker-selected {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--uo-accent, #0d9488);
   outline-offset: 2px;
   border-radius: 9999px;
 }

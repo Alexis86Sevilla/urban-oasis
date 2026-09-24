@@ -98,10 +98,22 @@
   <div class="absolute top-0 left-0 w-full z-[1000] p-3 sm:p-4 pt-4 sm:pt-6 px-4 sm:px-6 lg:px-12 xl:px-20 flex flex-col gap-2 sm:gap-3 pointer-events-none">
     @if (wheater()) {
       <div class="flex flex-row gap-2 items-center">
-        <div class="{{temperatureIndicator().class}} h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full border shadow-sm flex items-center gap-2">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
-          </svg>
+        <div class="{{temperatureIndicator().class}} h-10 sm:h-12 px-3 backdrop-blur-xl rounded-full shadow-sm flex items-center gap-2">
+          <!-- Non-colour cue (design D-9): the icon itself changes shape for
+               the extreme band, on top of the colour/label change — a colour
+               shift alone is invisible to a colour-blind user and washes out
+               in direct sunlight, this app's real outdoor usage context. -->
+          @if (temperatureIndicator().icon === 'warning') {
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <path d="M12 9v4"/>
+              <path d="M12 17h.01"/>
+            </svg>
+          } @else {
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+            </svg>
+          }
           <div class="flex flex-col leading-tight">
             <span class="text-sm sm:text-base font-bold">{{temperatureIndicator().temp}}</span>
             <span class="text-[10px] sm:text-xs font-medium opacity-80">{{temperatureIndicator().label}}</span>

@@ -2,15 +2,23 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
+import { WeatherService } from './services/wheater';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  host: {
+    // Root theming hook (design D-9): `styles.css` redefines the `--uo-*`
+    // custom properties per band, and any descendant — including the sheet
+    // and the map — inherits them without needing its own per-utility variant.
+    '[attr.data-temp-band]': 'weatherService.band()',
+  },
 })
 export class App {
   protected readonly title = signal('frontend');
+  protected readonly weatherService = inject(WeatherService);
 
   private readonly swUpdate = inject(SwUpdate);
   private reloading = false;
