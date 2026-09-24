@@ -118,8 +118,19 @@ export class Home {
     });
   }
 
+  /** Spanish labels matching the filter chips in the template. */
+  private static readonly FILTER_LABELS: Record<string, string> = {
+    ALL: 'Todo',
+    WATER_FOUNTAIN: 'Fuentes',
+    SHADE: 'Sombra',
+    AC_BUILDING: 'A/A',
+  };
+
   filter(type: string) {
     this.oasisService.activeFilter.set(type);
+    const label = Home.FILTER_LABELS[type] ?? type;
+    const count = this.oasisService.filteredOases().length;
+    this.announcer.announce(`Filtro ${label}. ${count} puntos.`, 'polite');
   }
 
   /**

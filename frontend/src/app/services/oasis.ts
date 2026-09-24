@@ -91,6 +91,12 @@ export class OasisService {
     this._selectedSpotId.set(null);
   }
 
+  /** Retry affordance for the sheet's error state — re-issues the load. */
+  public retry(): void {
+    this._status.set('loading');
+    this.loadOasesFromBackend();
+  }
+
   public updateActualPosition() {
     navigator.geolocation.getCurrentPosition(
       (position) => {

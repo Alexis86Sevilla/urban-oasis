@@ -1,4 +1,21 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
+import { OasisSpot } from '../../models/oasisSpot';
+import { OasisSpotType } from '../../enum/oasisSpotType';
+import { OasisStatus, RankedSpot } from '../../services/oasis';
+import { LocationStatus } from '../../services/location';
+import { formatDistance } from '../../utils/geo';
 
 /** The sheet's three fixed resting positions. */
 export type SheetSnap = 'peek' | 'half' | 'full';
@@ -27,8 +44,10 @@ export type SheetSnap = 'peek' | 'half' | 'full';
  * the map underneath stays fully interactive at every snap point. No focus
  * trap exists anywhere in this component.
  *
- * Slice 3b adds `spots`, `selectedId`, `locationStatus` inputs and a
- * `spotSelected` output on top of this shell; this slice is drag/snap only.
+ * Slice 3b (this revision) adds the ranked spot list, its loading/error/empty
+ * states, a bounded "Ver más" window, and the relocated footer identity
+ * content — all behind a pure signal API. This component never injects
+ * `OasisService`; `Home` reads/writes the shared state and passes it down.
  */
 @Component({
   selector: 'app-nearby-sheet',
@@ -54,6 +73,20 @@ export class NearbySheet {
   /** Two-way: a host can raise the sheet (e.g. a future map selection). */
   readonly snap = model<SheetSnap>('peek');
 
+  /** Rows to render, already distance-ranked (or name-ranked with no position). */
+  readonly spots = input.required<readonly RankedSpot[]>();
+  /** The currently selected spot id, owned by the host (`OasisService`). */
+  readonly selectedId = input<string | null>(null);
+  /** Catalogue load state — distinguishes loading/error/empty in the content area. */
+  readonly status = input.required<OasisStatus>();
+  /** Drives the per-row distance placeholder when no position is known yet. */
+  readonly locationStatus = input.required<LocationStatus>();
+
+  /** Emitted on row activation (click or Enter/Space, both native `<button>` behaviour). */
+  readonly spotSelected = output<string>();
+  /** Emitted from the error state's retry affordance. */
+  readonly retryRequested = output<void>();
+
   protected readonly dragging = signal(false);
   private readonly dragTranslatePx = signal<number | null>(null);
   private readonly viewportHeightPx = signal(this.measureViewportHeight());
@@ -61,6 +94,12 @@ export class NearbySheet {
   private dragPointerId: number | null = null;
   private dragStartClientY = 0;
   private dragStartTranslatePx = 0;
+
+  /** Tab-stop bound: only the nearest N rows render, plus a "Ver más" button. */
+  private static readonly ROWS_PER_PAGE = 20;
+  private readonly visibleCount = signal(NearbySheet.ROWS_PER_PAGE);
+  protected readonly visibleSpots = computed(() => this.spots().slice(0, this.visibleCount()));
+  protected readonly hasMore = computed(() => this.spots().length > this.visibleCount());
 
   /** The only style this component ever animates or writes: `transform`. */
   protected readonly transformValue = computed(() => {
@@ -77,6 +116,65 @@ export class NearbySheet {
     const onResize = () => this.viewportHeightPx.set(this.measureViewportHeight());
     window.addEventListener('resize', onResize);
     this.destroyRef.onDestroy(() => window.removeEventListener('resize', onResize));
+
+    // Reset the "Ver más" window whenever the ranked list itself changes
+    // (a new filter, or position becoming known) — a previously expanded
+    // window must not leak into a differently-scoped list.
+    effect(() => {
+      this.spots();
+      untracked(() => this.visibleCount.set(NearbySheet.ROWS_PER_PAGE));
+    });
+  }
+
+  protected showMore(): void {
+    this.visibleCount.update(count => count + NearbySheet.ROWS_PER_PAGE);
+  }
+
+  protected selectSpot(spot: OasisSpot): void {
+    this.spotSelected.emit(spot.id);
+  }
+
+  protected availabilityLabel(spot: OasisSpot): string {
+    return spot.available ? 'Disponible' : 'Fuera de servicio';
+  }
+
+  protected availabilityClass(available: boolean): string {
+    return available ? 'text-green-700' : 'text-red-600';
+  }
+
+  protected rowStateClasses(spotId: string): string {
+    return spotId === this.selectedId() ? 'border-teal-600 bg-teal-50' : 'border-slate-200 bg-white';
+  }
+
+  /** Same Spanish labels used by the map's marker popups, kept in sync by hand
+   * until slice 4 consolidates both call sites onto one shared formatter. */
+  protected typeLabel(type: OasisSpotType): string {
+    switch (type) {
+      case OasisSpotType.WATER_FOUNTAIN:
+        return 'Fuente de agua';
+      case OasisSpotType.SHADE:
+        return 'Parque o zona de sombra';
+      case OasisSpotType.AC_BUILDING:
+        return 'Edificio con A/A';
+    }
+  }
+
+  /** `formatDistance` when known; otherwise a placeholder tied to why it
+   * is not known yet, so the row never just silently omits the distance. */
+  protected distanceLabel(ranked: RankedSpot): string {
+    if (ranked.distanceMeters !== null) {
+      return formatDistance(ranked.distanceMeters);
+    }
+    switch (this.locationStatus()) {
+      case 'denied':
+      case 'failed-or-timed-out':
+        return 'Distancia no disponible';
+      case 'granted':
+        return 'Calculando distancia…';
+      case 'never-asked':
+      default:
+        return 'Activa tu ubicación para ver la distancia';
+    }
   }
 
   protected onHandlePointerDown(event: PointerEvent): void {
