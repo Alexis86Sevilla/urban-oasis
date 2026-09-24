@@ -123,6 +123,16 @@ export class Home {
       }
     });
 
+    // A map-driven selection moves no focus, so without this it is silent for
+    // a screen-reader user. A list selection is deliberately NOT announced: the
+    // chosen row already holds focus and the reader voices it anyway.
+    effect(() => {
+      const spot = this.oasisService.selectedSpot();
+      if (spot && this.oasisService.lastSelectionSource() === 'map') {
+        this.announcer.announce(`Seleccionado: ${spot.name}`, 'polite');
+      }
+    });
+
     // Location permission feedback, one distinct message per terminal state.
     effect(() => {
       const status = this.locationService.status();

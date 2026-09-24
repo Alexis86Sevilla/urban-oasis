@@ -7,12 +7,10 @@ export type AnnouncerPoliteness = 'polite' | 'assertive';
  * Thin wrapper over a screen-reader live region, so call sites never talk to
  * the underlying announcement mechanism directly.
  *
- * TEMPORARY implementation note: this slice hand-rolls the live region
- * instead of using `@angular/cdk/a11y`'s `LiveAnnouncer`, because installing
- * `@angular/cdk` is out of scope here — it lands in slice 3a. The public
- * `announce()` API intentionally matches `LiveAnnouncer`'s shape, so slice 3a
- * can swap this internal implementation for the CDK one without touching any
- * call site.
+ * This hand-rolled live region is the final implementation. An earlier
+ * plan to back it with @angular/cdk's LiveAnnouncer was dropped when the
+ * CDK was removed from the project — see
+ * sdd/frontend-ux-redesign/decision-hand-rolled-sheet.
  */
 @Injectable({
   providedIn: 'root',

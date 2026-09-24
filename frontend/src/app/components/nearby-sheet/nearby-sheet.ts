@@ -68,7 +68,13 @@ export class NearbySheet {
 
   /** `peek` is a fixed pixel value; `half`/`full` are viewport-height ratios,
    * matching the `--uo-sheet-*` custom properties in the stylesheet. */
-  private static readonly PEEK_PX = 96;
+  /**
+   * Must clear the 44px handle plus the projected filter band (a 44px chip
+   * row with 0.5rem of padding) and still show a sliver of the first list
+   * row, so the sheet reads as "there is a list here". At 96px the filters
+   * were cut off at rest.
+   */
+  private static readonly PEEK_PX = 168;
   private static readonly HALF_RATIO = 0.45;
   private static readonly FULL_RATIO = 0.88;
 

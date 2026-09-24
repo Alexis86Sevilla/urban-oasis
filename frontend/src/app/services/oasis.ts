@@ -82,7 +82,15 @@ export class OasisService {
     this.loadOasesFromBackend();
   }
 
-  public select(id: string): void {
+  /**
+   * Records where a selection came from. A list selection already moves focus
+   * to the chosen row, so the screen reader reads it for free; a map selection
+   * moves no focus at all and would otherwise be silent.
+   */
+  public readonly lastSelectionSource = signal<'list' | 'map'>('list');
+
+  public select(id: string, source: 'list' | 'map' = 'list'): void {
+    this.lastSelectionSource.set(source);
     this._selectedSpotId.set(id);
   }
 

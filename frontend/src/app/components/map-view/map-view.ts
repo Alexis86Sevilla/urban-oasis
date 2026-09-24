@@ -57,7 +57,7 @@ export class MapView implements AfterViewInit {
           // Keeping them out of the tab order avoids ~1500 unlabeled stops.
           keyboard: false,
         });
-        marker.on('click', () => this.oasisService.select(o.id));
+        marker.on('click', () => this.oasisService.select(o.id, 'map'));
         marker.on('add', () => this.applyMarkerAccessibleName(marker, o));
         this.markers.set(o.id, marker);
       });
