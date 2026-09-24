@@ -15,6 +15,7 @@ public class OasisSpot {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OasisType type;
 
