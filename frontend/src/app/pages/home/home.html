@@ -36,20 +36,47 @@
           </div>
         }
 
-        <button (click)="updateActualPosition()"
-             class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-md transition-all duration-200 flex items-center justify-center ml-auto relative"
-             [class.bg-teal-50]="oasisService.actualPosition()"
-             [class.border-teal-500]="oasisService.actualPosition()"
-             [class.bg-white]="!oasisService.actualPosition()"
-             [class.border-slate-200]="!oasisService.actualPosition()"
-             [class.hover:bg-slate-50]="!oasisService.actualPosition()"
-             [class.hover:border-slate-300]="!oasisService.actualPosition()"
-             [class.border-2]="oasisService.actualPosition()">
-          <img src="icons/map/location.svg" alt="Mi ubicación" class="w-4 h-4 sm:w-5 sm:h-5">
-          @if (oasisService.actualPosition()) {
-            <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-teal-500 rounded-full border-2 border-white"></span>
+        <div class="relative ml-auto">
+          <button (click)="onLocateClick()"
+               type="button"
+               aria-label="Activar mi ubicación"
+               [attr.aria-pressed]="locationService.status() === 'granted'"
+               class="cursor-pointer h-10 w-10 sm:h-12 sm:w-12 rounded-full shadow-md transition-all duration-200 flex items-center justify-center relative"
+               [class.bg-teal-50]="locationService.status() === 'granted'"
+               [class.border-teal-500]="locationService.status() === 'granted'"
+               [class.bg-red-50]="locationService.status() === 'denied' || locationService.status() === 'failed-or-timed-out'"
+               [class.border-red-300]="locationService.status() === 'denied' || locationService.status() === 'failed-or-timed-out'"
+               [class.bg-white]="locationService.status() === 'never-asked'"
+               [class.border-slate-200]="locationService.status() === 'never-asked'"
+               [class.hover:bg-slate-50]="locationService.status() === 'never-asked'"
+               [class.hover:border-slate-300]="locationService.status() === 'never-asked'"
+               [class.border-2]="locationService.status() !== 'never-asked'">
+            <img src="icons/map/location.svg" alt="" class="w-4 h-4 sm:w-5 sm:h-5">
+            @if (locationService.status() === 'granted') {
+              <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-teal-500 rounded-full border-2 border-white"></span>
+            }
+          </button>
+
+          @if (showLocationExplainer()) {
+            <div role="dialog" aria-label="Permiso de ubicación" tabindex="-1" (keydown.escape)="dismissLocationExplainer()" class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+              <p class="mb-3">Urban Oasis quiere usar tu ubicación para ordenar los puntos por cercanía. Solo se usa en tu dispositivo.</p>
+              <div class="flex gap-2 justify-end">
+                <button (click)="dismissLocationExplainer()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50">Ahora no</button>
+                <button #confirmLocationBtn (click)="confirmLocationRequest()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium bg-teal-600 text-white hover:bg-teal-700">Activar ubicación</button>
+              </div>
+            </div>
+          } @else if (locationService.status() === 'denied') {
+            <div class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-red-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+              <p class="mb-2">No se pudo activar tu ubicación. El permiso puede estar bloqueado en el navegador.</p>
+              <button (click)="onLocateClick()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium bg-teal-600 text-white hover:bg-teal-700">Reintentar</button>
+            </div>
+          } @else if (locationService.status() === 'failed-or-timed-out') {
+            <div class="absolute right-0 mt-2 w-64 sm:w-72 bg-white border border-amber-200 rounded-xl shadow-lg p-3 text-sm text-slate-600 z-[1010]">
+              <p class="mb-2">No se pudo obtener tu ubicación a tiempo. Comprueba tu conexión o el GPS.</p>
+              <button (click)="onLocateClick()" type="button" class="cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium bg-teal-600 text-white hover:bg-teal-700">Reintentar</button>
+            </div>
           }
-        </button>
+        </div>
       </div>
 
       @if (extremeAlert().show) {
