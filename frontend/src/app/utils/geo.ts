@@ -36,3 +36,15 @@ export function formatDistance(meters: number): string {
   }
   return `${Math.round(meters)} m`;
 }
+
+/**
+ * Builds a Google Maps walking-directions URL from an origin to a
+ * destination. The single source of truth for this construction — kept as a
+ * pure helper here (rather than duplicated at each call site) so there is
+ * exactly one copy of it in the app.
+ */
+export function buildWalkingDirectionsUrl(origin: LatLng, destination: LatLng): string {
+  const [originLat, originLng] = origin;
+  const [destLat, destLng] = destination;
+  return `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLng}&destination=${destLat},${destLng}&travelmode=walking`;
+}

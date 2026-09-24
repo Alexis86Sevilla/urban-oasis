@@ -72,6 +72,101 @@
   background: var(--uo-accent-soft, rgb(203 213 225));
 }
 
+/* Fixed band for the selected-spot card — sits between the handle and the
+   filter band, outside `.uo-sheet-content`, so it never scrolls out of view
+   even when the selected spot is far down the list. */
+.uo-sheet-selected {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0 1rem 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-teal-200, rgb(153 246 228));
+  background: var(--color-teal-50, rgb(240 253 250));
+}
+
+.uo-sheet-selected-icon {
+  flex: none;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.uo-sheet-selected-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.uo-sheet-selected-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-slate-800, rgb(30 41 59));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uo-sheet-selected-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.uo-sheet-selected-distance {
+  font-weight: 600;
+  color: var(--color-teal-700, rgb(15 118 110));
+}
+
+.uo-sheet-selected-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+.uo-sheet-selected-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.uo-sheet-selected-directions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 9999px;
+  background: var(--color-teal-600, rgb(13 148 136));
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.uo-sheet-selected-close {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-slate-200, rgb(226 232 240));
+  background: white;
+  color: var(--color-slate-500, rgb(100 116 139));
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .uo-sheet-filters {
   flex: none;
   padding: 0 1rem 0.5rem;
@@ -81,5 +176,8 @@
   flex: 1 1 auto;
   overflow-y: auto;
   touch-action: pan-y;
-  padding: 0 1rem 1rem;
+  /* Bottom padding must clear the device safe area (e.g. the iPhone home
+     indicator) on top of the usual 1rem, or the last row and the footer
+     identity block get clipped behind it on a real phone. */
+  padding: 0 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
 }

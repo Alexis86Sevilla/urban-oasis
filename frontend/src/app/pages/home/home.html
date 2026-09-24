@@ -18,8 +18,10 @@
     [selectedId]="oasisService.selectedSpotId()"
     [status]="oasisService.status()"
     [locationStatus]="locationService.status()"
+    [userPosition]="locationService.position()"
     (spotSelected)="oasisService.select($event)"
     (retryRequested)="oasisService.retry()"
+    (selectedClosed)="oasisService.clearSelection()"
   >
     <div sheetFilters class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             <button (click)="filter('ALL')"

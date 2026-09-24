@@ -11,6 +11,51 @@
     <span class="uo-sheet-grip" aria-hidden="true"></span>
   </div>
 
+  <!-- Pinned in its own fixed band — never inside the scrolling list — so it
+       stays visible even when the selected spot is far down the list.
+       Renders whenever `selectedId` matches a spot in `spots`, regardless of
+       whether the selection came from the map or the list. Appearing here
+       never moves focus. -->
+  @if (selectedRanked(); as selected) {
+    <div class="uo-sheet-selected" role="group" aria-label="Punto seleccionado">
+      <span class="uo-sheet-selected-icon" aria-hidden="true">{{ typeIcon(selected.spot.type) }}</span>
+
+      <div class="uo-sheet-selected-info">
+        <span class="uo-sheet-selected-name">{{ selected.spot.name }}</span>
+        <span class="uo-sheet-selected-meta">
+          <span class="uo-sheet-selected-distance">{{ distanceLabel(selected) }}</span>
+          <span class="uo-sheet-selected-availability" [class]="availabilityClass(selected.spot.available)">
+            @if (!selected.spot.available) {
+              <span aria-hidden="true">⚠</span>
+            }
+            {{ availabilityLabel(selected.spot) }}
+          </span>
+        </span>
+      </div>
+
+      <div class="uo-sheet-selected-actions">
+        @if (selectedDirectionsUrl(); as directionsUrl) {
+          <a
+            [href]="directionsUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="uo-sheet-selected-directions"
+          >
+            Cómo llegar
+          </a>
+        }
+        <button
+          type="button"
+          (click)="closeSelected()"
+          class="uo-sheet-selected-close"
+          aria-label="Cerrar punto seleccionado"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  }
+
   <!-- Filter controls are projected here by the host: they belong next to
        the list they filter, and they must not scroll away with it. -->
   <div class="uo-sheet-filters">

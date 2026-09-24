@@ -16,7 +16,7 @@ import { OasisSpot } from '../../models/oasisSpot';
 import { OasisSpotType } from '../../enum/oasisSpotType';
 import { OasisStatus, RankedSpot } from '../../services/oasis';
 import { LocationStatus } from '../../services/location';
-import { formatDistance } from '../../utils/geo';
+import { buildWalkingDirectionsUrl, formatDistance } from '../../utils/geo';
 
 /** The sheet's three fixed resting positions. */
 export type SheetSnap = 'peek' | 'half' | 'full';
@@ -90,11 +90,18 @@ export class NearbySheet {
   readonly status = input.required<OasisStatus>();
   /** Drives the per-row distance placeholder when no position is known yet. */
   readonly locationStatus = input.required<LocationStatus>();
+  /** Same tuple shape as `LocationService.position`; drives the selected-spot
+   * card's "Cómo llegar" link. `null` while no position is known. */
+  readonly userPosition = input<readonly [number, number, number] | null>(null);
 
   /** Emitted on row activation (click or Enter/Space, both native `<button>` behaviour). */
   readonly spotSelected = output<string>();
   /** Emitted from the error state's retry affordance. */
   readonly retryRequested = output<void>();
+  /** Emitted from the selected-spot card's close button. The host owns
+   * clearing the selection (`OasisService.clearSelection()`); this component
+   * never touches selection state itself. */
+  readonly selectedClosed = output<void>();
 
   protected readonly dragging = signal(false);
   private readonly dragTranslatePx = signal<number | null>(null);
@@ -109,6 +116,28 @@ export class NearbySheet {
   private readonly visibleCount = signal(NearbySheet.ROWS_PER_PAGE);
   protected readonly visibleSpots = computed(() => this.spots().slice(0, this.visibleCount()));
   protected readonly hasMore = computed(() => this.spots().length > this.visibleCount());
+
+  /**
+   * The selected spot, rendered in a fixed band above the list. One rule,
+   * independent of `OasisService.lastSelectionSource` — it renders whenever
+   * `selectedId` matches a spot in `spots`, whether the selection came from a
+   * map tap or a list row, and even when that spot sits outside the
+   * paginated `visibleSpots()` window.
+   */
+  protected readonly selectedRanked = computed<RankedSpot | null>(() => {
+    const id = this.selectedId();
+    if (!id) return null;
+    return this.spots().find(ranked => ranked.spot.id === id) ?? null;
+  });
+
+  /** `null` (hides the link) until both the selected spot and the user's
+   * position are known. */
+  protected readonly selectedDirectionsUrl = computed<string | null>(() => {
+    const ranked = this.selectedRanked();
+    const position = this.userPosition();
+    if (!ranked || !position) return null;
+    return buildWalkingDirectionsUrl([position[0], position[1]], [ranked.spot.latitude, ranked.spot.longitude]);
+  });
 
   /** The only style this component ever animates or writes: `transform`. */
   protected readonly transformValue = computed(() => {
@@ -134,10 +163,13 @@ export class NearbySheet {
       untracked(() => this.visibleCount.set(NearbySheet.ROWS_PER_PAGE));
     });
 
-    // Two-way selection sync, map -> list side. Scrolls the matching row
-    // into view but NEVER moves focus — a keyboard user's focus must stay
-    // exactly where they put it; only their own discrete row activation
-    // moves focus (native <button> behaviour), never this reactive sync.
+    // Two-way selection sync, map -> list side. Raises `peek` to `half` so
+    // the new selected-spot card is actually visible (at `half`/`full` the
+    // sheet is left alone — never yanked back down). Also scrolls the
+    // matching row into view but NEVER moves focus — a keyboard user's focus
+    // must stay exactly where they put it; only their own discrete row
+    // activation moves focus (native <button> behaviour), never this
+    // reactive sync, and never the card appearing.
     effect(() => {
       const id = this.selectedId();
       if (!id) return;
@@ -157,6 +189,25 @@ export class NearbySheet {
 
   protected selectSpot(spot: OasisSpot): void {
     this.spotSelected.emit(spot.id);
+  }
+
+  /** Closes the selected-spot card. Does not touch `snap` — closing clears
+   * the selection only; it must never yank the sheet back down. */
+  protected closeSelected(): void {
+    this.selectedClosed.emit();
+  }
+
+  /** Same emoji set as the map's marker icons (`MapView.getIconForType`),
+   * kept in sync by hand until both call sites share one icon lookup. */
+  protected typeIcon(type: OasisSpotType): string {
+    switch (type) {
+      case OasisSpotType.WATER_FOUNTAIN:
+        return '💧';
+      case OasisSpotType.SHADE:
+        return '🌳';
+      case OasisSpotType.AC_BUILDING:
+        return '❄️';
+    }
   }
 
   protected availabilityLabel(spot: OasisSpot): string {
