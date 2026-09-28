@@ -15,7 +15,7 @@
     since a meta tag cannot deliver them.
     http://localhost:8080 in connect-src is only reachable in local development.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://urban-oasis.info https://api.open-meteo.com http://localhost:8080; font-src 'self' data:; base-uri 'self'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://urban-oasis.info https://api.open-meteo.com https://*.tile.openstreetmap.org http://localhost:8080; font-src 'self' data:; base-uri 'self'; object-src 'none'">
 
   <meta name="description" content="Mapa de Sevilla con fuentes de agua potable, zonas de sombra y edificios con aire acondicionado. Encuentra refugios contra el calor extremo.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
